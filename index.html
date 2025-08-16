@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Orçamentos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Barra Lateral (Central de Comando) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>GestorPro</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">Início</a>
+                <a href="#" class="nav-item">Clientes</a>
+                <a href="#" class="nav-item">Orçamentos</a>
+                <a href="#" class="nav-item">Relatórios</a>
+                <a href="#" class="nav-item">Configurações</a>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal (A Lousa) -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Dashboard de Orçamentos</h1>
+                <button class="add-button">+ Novo Orçamento</button>
+            </header>
+
+            <div class="kanban-board">
+                <!-- Coluna 1: Nova Entrada -->
+                <div class="kanban-column">
+                    <h3 class="column-title">Nova Entrada</h3>
+                </div>
+
+                <!-- Coluna 2: Aguardando Respostas -->
+                <div class="kanban-column">
+                    <h3 class="column-title">Aguardando Respostas</h3>
+                </div>
+
+                <!-- Coluna 3: Enviado -->
+                <div class="kanban-column">
+                    <h3 class="column-title">Enviado</h3>
+                </div>
+
+                <!-- Coluna 4: Aprovado -->
+                <div class="kanban-column">
+                    <h3 class="column-title">Aprovado</h3>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para Adicionar Orçamento -->
+    <div id="orcamento-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Novo Orçamento</h2>
+            <form id="orcamento-form">
+                <label for="project-name">Nome do Projeto:</label>
+                <input type="text" id="project-name" name="project-name" required>
+
+                <div style="position: relative;">
+                    <label for="client-name">Nome do Cliente:</label>
+                    <input type="text" id="client-name" name="client-name" required autocomplete="off">
+                    <div id="sugestoes-cliente"></div>
+                </div>
+
+                <label for="entry-date">Data de Entrada:</label>
+                <input type="date" id="entry-date" name="entry-date" required>
+
+                <label for="deadline-date">Data Limite para Envio:</label>
+                <input type="date" id="deadline-date" name="deadline-date" required>
+
+                <label for="prioridade-input">Prioridade:</label>
+                <select id="prioridade-input" name="prioridade">
+                    <option value="Alta">Alta</option>
+                    <option value="Média" selected>Média</option>
+                    <option value="Baixa">Baixa</option>
+                </select>
+
+                <button type="submit" class="submit-button">Avançar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Gerar Dúvidas -->
+    <div id="duvidas-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Analisar Escopo e Gerar Dúvidas</h2>
+            
+            <label for="scope-input">Cole o escopo do serviço:</label>
+            <textarea id="scope-input" rows="8"></textarea>
+            
+            <button id="generate-doubts-btn" class="submit-button">Gerar Dúvidas</button>
+
+            <hr>
+
+            <textarea id="duvidas-geradas-input" rows="5" placeholder="Cole aqui a lista de dúvidas gerada pela IA..."></textarea>
+
+            <button id="create-card-final-btn" class="submit-button">Criar Card</button>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Card -->
+    <div id="detalhes-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="detalhes-projeto">Nome do Projeto</h2>
+            <p><strong>Cliente:</strong> <span id="detalhes-cliente"></span></p>
+            <p><strong>Prioridade:</strong> <span id="detalhes-prioridade"></span></p>
+            <p><strong>Entrada:</strong> <span id="detalhes-entrada"></span> | <strong>Limite:</strong> <span id="detalhes-limite"></span></p>
+            <hr>
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <h3>Escopo do Orçamento</h3>
+                    <p id="detalhes-escopo" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
+                </div>
+                <div style="flex: 1;">
+                    <h3>Dúvidas Pendentes</h3>
+                    <p id="detalhes-duvidas" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

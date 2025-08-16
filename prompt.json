@@ -1,0 +1,11 @@
+{
+  "contents": [
+    {
+      "parts": [
+        {
+          "text": "Crie o conteúdo para um arquivo chamado script.js. O objetivo deste script é encontrar um elemento HTML com a classe 'add-button' e adicionar um 'event listener' de clique a ele. Quando o botão for clicado, ele deve exibir um alert com a mensagem 'O botão para adicionar um novo orçamento foi clicado!'. Gere apenas o código JavaScript puro, sem explicações ou formatação markdown."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,308 @@
+/* Estilos Gerais */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f4f7fa;
+    color: #333;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Barra Lateral */
+.sidebar {
+    width: 240px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 20px;
+    font-size: 1.5em;
+    text-align: center;
+    border-bottom: 1px solid #34495e;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.nav-item {
+    color: #ecf0f1;
+    text-decoration: none;
+    padding: 15px 20px;
+    transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: #34495e;
+}
+
+.nav-item.active {
+    background-color: #2980b9;
+}
+
+/* Conteúdo Principal */
+.main-content {
+    flex-grow: 1; /* Ocupa o resto do espaço */
+    padding: 20px;
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for grande */
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.add-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-button:hover {
+    background-color: #2980b9;
+}
+
+/* Board Kanban */
+.kanban-board {
+    display: flex;
+    gap: 20px;
+}
+
+.kanban-column {
+    background-color: #e1e4e8;
+    border-radius: 8px;
+    padding: 15px;
+    width: 300px;
+    flex-shrink: 0; /* Impede que as colunas encolham */
+}
+
+.column-title {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ccc;
+}
+
+/* Card do Orçamento */
+.kanban-card {
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+    position: relative; /* Necessário para posicionar o botão de exclusão */
+}
+
+.kanban-card.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.delete-card-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 1.5em;
+    color: #aaa;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.kanban-card:hover .delete-card-btn {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.delete-card-btn:hover {
+    color: #333;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.priority {
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.priority.high {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.priority.medium {
+    background-color: #f39c12;
+    color: white;
+}
+
+.priority.low {
+    background-color: #3498db;
+    color: white;
+}
+
+.alert-icon {
+    font-size: 1.2em;
+}
+
+.card-title {
+    margin: 0 0 5px 0;
+}
+
+.card-client {
+    font-size: 0.9em;
+    color: #777;
+    margin: 0 0 10px 0;
+}
+
+.card-dates p {
+    font-size: 0.85em;
+    margin: 4px 0;
+}
+
+/* Estilos do Modal */
+.modal {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* Fundo semi-transparente */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* Reduzido para melhor visualização */
+    padding: 25px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px; /* Aumentado para o novo conteúdo */
+    border-radius: 8px;
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Estilos do Formulário no Modal */
+#orcamento-form label, #duvidas-modal label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#orcamento-form input, #duvidas-modal textarea, #orcamento-form select {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Estilos da Autossugestão */
+#sugestoes-cliente {
+    display: none; /* Começa escondido */
+    position: absolute;
+    border: 1px solid #ddd;
+    background-color: white;
+    width: calc(100% - 22px);
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1001;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.sugestao-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.sugestao-item:hover {
+    background-color: #f1f1f1;
+}
+
+.submit-button, #generate-doubts-btn, #create-card-final-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 1em;
+    transition: background-color 0.2s;
+}
+
+.submit-button:hover, #generate-doubts-btn:hover, #create-card-final-btn:hover {
+    background-color: #e0a800;
+}
+
+#detalhes-modal .modal-content h2 {
+    margin-top: 0;
+}
+
+#detalhes-modal .modal-content hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+
+#generate-doubts-btn {
+    background-color: #007bff;
+}
+
+#generate-doubts-btn:hover {
+    background-color: #0069d9;
+}
+
+#duvidas-modal hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+#lista-duvidas-container {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 100px;
+}
