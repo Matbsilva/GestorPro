@@ -244,7 +244,7 @@ generateDoubtsBtn.addEventListener('click', async () => {
         }
 
         const data = await response.json();
-        doubtsContainer.value = data.duvidas;
+        doubtsContainer.value = data.duvidasCompleta;
 
     } catch (error) {
         console.error('Erro ao gerar dúvidas:', error);
