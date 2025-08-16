@@ -206,7 +206,7 @@ orcamentoForm.addEventListener('submit', (event) => {
 });
 
 // Lida com o clique no botão "Gerar Dúvidas"
-generateDoubtsBtn.addEventListener('click', () => {
+generateDoubtsBtn.addEventListener('click', async () => {
     const scopeText = document.getElementById('scope-input').value;
     const doubtsContainer = document.getElementById('duvidas-geradas-input');
 
@@ -215,18 +215,37 @@ generateDoubtsBtn.addEventListener('click', () => {
         return;
     }
 
-    // Cria o prompt para a IA
-    const prompt = `"Por favor, atue como um engenheiro sênior. Analise o seguinte escopo de serviço e gere uma lista de dúvidas técnicas e de escopo que precisam ser esclarecidas com o cliente antes de finalizar o orçamento. O escopo é: ${scopeText}"`;
+    // Feedback visual para o usuário
+    doubtsContainer.value = 'Gerando dúvidas...';
+    doubtsContainer.disabled = true;
+    generateDoubtsBtn.disabled = true;
 
-    // Exibe o prompt no console
-    console.log("--- PROMPT PARA IA ---");
-    console.log(prompt);
-    console.warn("AÇÃO NECESSÁRIA: Copie o prompt acima e cole no seu assistente de IA para gerar as dúvidas.");
-    console.log("--------------------");
+    try {
+        const response = await fetch('/api/gerar-duvidas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ escopo: scopeText }),
+        });
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+        }
 
-    // Atualiza a interface para o usuário
-    doubtsContainer.placeholder = 'Prompt gerado no console. Cole a resposta da IA aqui e clique em "Criar Card".';
+        const data = await response.json();
+        doubtsContainer.value = data.duvidas;
+
+    } catch (error) {
+        console.error('Erro ao gerar dúvidas:', error);
+        doubtsContainer.value = `Ocorreu um erro: ${error.message}. Tente novamente.`;
+        alert(`Erro ao se comunicar com a API: ${error.message}`);
+    } finally {
+        // Restaura a interface
+        doubtsContainer.disabled = false;
+        generateDoubtsBtn.disabled = false;
+    }
 });
 
 // Botão "Criar Card" do segundo modal
