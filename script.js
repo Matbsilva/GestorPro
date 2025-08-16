@@ -52,7 +52,7 @@ function criarCardOrcamento(dadosOrcamento, textoDuvidas, textoEscopo) {
     const prioridadeClasse = dadosOrcamento.prioridade.toLowerCase();
     if (prioridadeClasse === 'alta') {
         prioritySpan.classList.add('high');
-    } else if (prioridadeClasse === 'média') {
+    } else if (prioridadeClasse === 'm��dia') {
         prioritySpan.classList.add('medium');
     } else {
         prioritySpan.classList.add('low');
@@ -114,7 +114,7 @@ document.querySelectorAll('.kanban-column').forEach((column, index) => {
     });
 });
 
-// Lógica de Exclusão e Visualização de Dúvidas (Event Delegation)
+// Lógica de Exclus��o e Visualização de Dúvidas (Event Delegation)
 kanbanBoard.addEventListener('click', (event) => {
     const cardClicado = event.target.closest('.kanban-card');
 
@@ -156,6 +156,7 @@ kanbanBoard.addEventListener('click', (event) => {
 
 // Botão "Gerar Dúvidas" do segundo modal
 const generateDoubtsBtn = document.getElementById('generate-doubts-btn');
+const copiarDuvidasBtn = document.getElementById('copiar-duvidas-btn');
 
 // Abre o primeiro modal
 novoOrcamentoBtn.addEventListener('click', () => {
@@ -247,6 +248,30 @@ generateDoubtsBtn.addEventListener('click', async () => {
         generateDoubtsBtn.disabled = false;
     }
 });
+
+// Lida com o clique no botão "Copiar Dúvidas"
+copiarDuvidasBtn.addEventListener('click', () => {
+    const doubtsTextarea = document.getElementById('duvidas-geradas-input');
+    const textToCopy = doubtsTextarea.value;
+
+    if (!textToCopy.trim() || textToCopy === 'Gerando dúvidas...') {
+        alert('Não há dúvidas para copiar.');
+        return;
+    }
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        // Feedback visual
+        const originalText = copiarDuvidasBtn.textContent;
+        copiarDuvidasBtn.textContent = 'Copiado!';
+        setTimeout(() => {
+            copiarDuvidasBtn.textContent = originalText;
+        }, 2000);
+    }).catch(err => {
+        console.error('Erro ao copiar texto: ', err);
+        alert('Falha ao copiar as dúvidas. Verifique as permissões do navegador.');
+    });
+});
+
 
 // Botão "Criar Card" do segundo modal
 const createCardFinalBtn = document.getElementById('create-card-final-btn');
@@ -406,4 +431,3 @@ document.addEventListener('click', (event) => {
 // --- Inicialização ---
 // Carrega o estado salvo quando a página é carregada
 document.addEventListener('DOMContentLoaded', carregarEstado);
-

@@ -204,6 +204,14 @@ body {
     position: relative;
 }
 
+#duvidas-modal .modal-content {
+    max-width: 800px;
+}
+
+#duvidas-modal textarea {
+    min-height: 150px;
+}
+
 .close-button {
     color: #aaa;
     float: right;
