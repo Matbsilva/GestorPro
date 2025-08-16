@@ -1,6 +1,7 @@
 // Variáveis globais
 let dadosOrcamentoTemporario = {};
 let cardEmEdicao = null;
+let cardSendoEditado = null; // Guarda referência ao card no modal de detalhes
 
 // --- Seletores de Elementos ---
 const novoOrcamentoBtn = document.querySelector('.add-button');
@@ -52,7 +53,7 @@ function criarCardOrcamento(dadosOrcamento, textoDuvidas, textoEscopo) {
     const prioridadeClasse = dadosOrcamento.prioridade.toLowerCase();
     if (prioridadeClasse === 'alta') {
         prioritySpan.classList.add('high');
-    } else if (prioridadeClasse === 'm��dia') {
+    } else if (prioridadeClasse === 'média') {
         prioritySpan.classList.add('medium');
     } else {
         prioritySpan.classList.add('low');
@@ -114,7 +115,7 @@ document.querySelectorAll('.kanban-column').forEach((column, index) => {
     });
 });
 
-// Lógica de Exclus��o e Visualização de Dúvidas (Event Delegation)
+// Lógica de Exclusão e Visualização de Dúvidas (Event Delegation)
 kanbanBoard.addEventListener('click', (event) => {
     const cardClicado = event.target.closest('.kanban-card');
 
@@ -124,11 +125,13 @@ kanbanBoard.addEventListener('click', (event) => {
             cardClicado.remove();
             salvarEstado(); // Salva o estado após excluir um card
         }
-        return; // Para a execução para não abrir o alert
+        return; // Para a execução para não abrir o modal
     }
 
     // Se o clique foi em um card
     if (cardClicado) {
+        cardSendoEditado = cardClicado; // Guarda a referência do card clicado
+
         // Extrai todas as informações do card
         const projeto = cardClicado.querySelector('.card-title').textContent;
         const cliente = cardClicado.querySelector('.card-client').textContent.replace('Cliente: ', '');
@@ -138,7 +141,7 @@ kanbanBoard.addEventListener('click', (event) => {
         const duvidas = cardClicado.dataset.duvidas || 'Nenhuma dúvida cadastrada.';
         const escopo = cardClicado.dataset.escopo || 'Nenhum escopo cadastrado.';
 
-        // Preenche o modal de detalhes
+        // Preenche o modal de detalhes (modo visualização)
         document.getElementById('detalhes-projeto').textContent = projeto;
         document.getElementById('detalhes-cliente').textContent = cliente;
         document.getElementById('detalhes-prioridade').textContent = prioridade;
@@ -146,6 +149,14 @@ kanbanBoard.addEventListener('click', (event) => {
         document.getElementById('detalhes-limite').textContent = limite;
         document.getElementById('detalhes-duvidas').innerText = duvidas;
         document.getElementById('detalhes-escopo').innerText = escopo;
+
+        // Garante que o modal está no modo de visualização
+        document.getElementById('view-mode').classList.remove('hidden');
+        document.getElementById('edit-mode').classList.add('hidden');
+        document.querySelectorAll('.view-mode-field').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('.edit-mode-field').forEach(el => el.classList.add('hidden'));
+        document.getElementById('editar-card-btn').classList.remove('hidden');
+        document.getElementById('salvar-card-btn').classList.add('hidden');
 
         // Exibe o modal
         detalhesModal.style.display = 'block';
@@ -169,6 +180,7 @@ function closeModal() {
     orcamentoModal.style.display = 'none';
     duvidasModal.style.display = 'none';
     detalhesModal.style.display = 'none';
+    cardSendoEditado = null; // Limpa a referência ao fechar
 }
 
 // Adiciona evento de fechar aos botões 'X' de todos os modais
@@ -196,8 +208,6 @@ orcamentoForm.addEventListener('submit', (event) => {
         prioridade: document.getElementById('prioridade-input').value
     };
 
-    console.log('Dados temporários salvos:', dadosOrcamentoTemporario);
-
     // Fecha o primeiro modal e abre o segundo
     closeModal();
     duvidasModal.style.display = 'block';
@@ -224,9 +234,7 @@ generateDoubtsBtn.addEventListener('click', async () => {
     try {
         const response = await fetch('/api/gerar-duvidas', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ escopo: scopeText }),
         });
 
@@ -314,6 +322,68 @@ createCardFinalBtn.addEventListener('click', () => {
     salvarEstado();
 });
 
+// --- Lógica de Edição do Modal de Detalhes ---
+const editarCardBtn = document.getElementById('editar-card-btn');
+const salvarCardBtn = document.getElementById('salvar-card-btn');
+
+editarCardBtn.addEventListener('click', () => {
+    // Esconde campos de visualização e mostra campos de edição
+    document.getElementById('view-mode').classList.add('hidden');
+    document.getElementById('edit-mode').classList.remove('hidden');
+    document.querySelectorAll('.view-mode-field').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.edit-mode-field').forEach(el => el.classList.remove('hidden'));
+    
+    // Preenche os inputs com os valores atuais
+    document.getElementById('edit-projeto').value = document.getElementById('detalhes-projeto').textContent;
+    document.getElementById('edit-cliente').value = document.getElementById('detalhes-cliente').textContent;
+    document.getElementById('edit-prioridade').value = document.getElementById('detalhes-prioridade').textContent;
+    document.getElementById('edit-entrada').value = cardSendoEditado.querySelector('.card-dates p:nth-child(1)').textContent.replace('Entrada: ', '');
+    document.getElementById('edit-limite').value = cardSendoEditado.querySelector('.card-dates p:nth-child(2)').textContent.replace('Limite: ', '');
+    document.getElementById('edit-escopo').value = cardSendoEditado.dataset.escopo;
+    document.getElementById('edit-duvidas').value = cardSendoEditado.dataset.duvidas;
+
+    // Troca os botões
+    editarCardBtn.classList.add('hidden');
+    salvarCardBtn.classList.remove('hidden');
+});
+
+salvarCardBtn.addEventListener('click', () => {
+    if (!cardSendoEditado) return;
+
+    // Pega os novos valores dos inputs
+    const novoProjeto = document.getElementById('edit-projeto').value;
+    const novoCliente = document.getElementById('edit-cliente').value;
+    const novaPrioridade = document.getElementById('edit-prioridade').value;
+    const novaEntrada = document.getElementById('edit-entrada').value;
+    const novoLimite = document.getElementById('edit-limite').value;
+    const novoEscopo = document.getElementById('edit-escopo').value;
+    const novasDuvidas = document.getElementById('edit-duvidas').value;
+
+    // Atualiza o card no Kanban
+    cardSendoEditado.querySelector('.card-title').textContent = novoProjeto;
+    cardSendoEditado.querySelector('.card-client').textContent = `Cliente: ${novoCliente}`;
+    cardSendoEditado.querySelector('.priority').textContent = novaPrioridade;
+    cardSendoEditado.querySelector('.card-dates').innerHTML = `<p><strong>Entrada:</strong> ${novaEntrada}</p><p><strong>Limite:</strong> ${novoLimite}</p>`;
+    cardSendoEditado.dataset.escopo = novoEscopo;
+    cardSendoEditado.dataset.duvidas = novasDuvidas;
+    
+    // Atualiza a cor da prioridade
+    const prioritySpan = cardSendoEditado.querySelector('.priority');
+    prioritySpan.className = 'priority'; // Reseta as classes
+    const prioridadeClasse = novaPrioridade.toLowerCase();
+    if (prioridadeClasse === 'alta') {
+        prioritySpan.classList.add('high');
+    } else if (prioridadeClasse === 'média') {
+        prioritySpan.classList.add('medium');
+    } else {
+        prioritySpan.classList.add('low');
+    }
+
+    // Salva o estado e fecha o modal
+    salvarEstado();
+    closeModal();
+});
+
 
 // --- Lógica de Persistência de Dados ---
 
@@ -353,7 +423,7 @@ function carregarEstado() {
     const colunas = JSON.parse(data);
     const todasColunasEl = document.querySelectorAll('.kanban-column');
 
-    // Limpa as colunas antes de carregar (exceto o card de exemplo, se houver)
+    // Limpa as colunas antes de carregar
     todasColunasEl.forEach(c => c.innerHTML = `<h3 class="column-title">${c.querySelector('.column-title').textContent}</h3>`);
 
 

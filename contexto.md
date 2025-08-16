@@ -7,12 +7,13 @@ Criar um aplicativo web para gestão de orçamentos de engenharia usando HTML, C
 - `index.html`: Estrutura visual do dashboard e modais.
 - `style.css`: Estilo da aplicação.
 - `script.js`: Lógica de interatividade do frontend.
+- `api/gerar-duvidas.js`: Backend (Função Serverless) que contém o prompt mestre e chama a API do Gemini.
 - `contexto.md`: Este arquivo.
-- **Repositório GitHub:** O projeto está versionado e online em `github.com/Matbsilva/GestorPro`.
-- **Hospedagem:** O frontend está publicado e ao vivo na Vercel.
+- **Repositório GitHub:** `github.com/Matbsilva/GestorPro`.
+- **Hospedagem:** O frontend e o backend estão publicados na Vercel.
 
 ## Estado da Aplicação
-O MVP está completo e funcional. O fluxo de trabalho principal, incluindo criação, movimentação, exclusão e persistência de dados dos cards, está implementado. A aplicação está online.
+O MVP está completo e funcional. A integração com a IA do Gemini é real e está usando um prompt mestre (v5.0) detalhado e calibrado. O fluxo de trabalho inteligente está implementado.
 
 ## Nosso Próximo Objetivo Imediato
-Substituir o fluxo de trabalho manual de 'copiar/colar' por uma chamada de API real e segura para o Gemini. Para isso, vamos criar uma Função Serverless na Vercel (um backend simples) e modificar nosso frontend para se comunicar com ela.
+Iniciar a fase de refinamento da interface (UI/UX). O primeiro passo é substituir o `alert()` que exibe as dúvidas por um modal de detalhes completo e bem desenhado.

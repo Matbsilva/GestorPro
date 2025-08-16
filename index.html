@@ -111,21 +111,44 @@
     <div id="detalhes-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h2 id="detalhes-projeto">Nome do Projeto</h2>
-            <p><strong>Cliente:</strong> <span id="detalhes-cliente"></span></p>
-            <p><strong>Prioridade:</strong> <span id="detalhes-prioridade"></span></p>
-            <p><strong>Entrada:</strong> <span id="detalhes-entrada"></span> | <strong>Limite:</strong> <span id="detalhes-limite"></span></p>
+            
+            <!-- Modo Visualização -->
+            <div id="view-mode">
+                <h2 id="detalhes-projeto">Nome do Projeto</h2>
+                <p><strong>Cliente:</strong> <span id="detalhes-cliente"></span></p>
+                <p><strong>Prioridade:</strong> <span id="detalhes-prioridade"></span></p>
+                <p><strong>Entrada:</strong> <span id="detalhes-entrada"></span> | <strong>Limite:</strong> <span id="detalhes-limite"></span></p>
+            </div>
+
+            <!-- Modo Edição (Oculto por padrão) -->
+            <div id="edit-mode" class="hidden">
+                <input type="text" id="edit-projeto" placeholder="Nome do Projeto">
+                <input type="text" id="edit-cliente" placeholder="Nome do Cliente">
+                <select id="edit-prioridade">
+                    <option value="Alta">Alta</option>
+                    <option value="Média">Média</option>
+                    <option value="Baixa">Baixa</option>
+                </select>
+                <input type="date" id="edit-entrada">
+                <input type="date" id="edit-limite">
+            </div>
+
             <hr>
             <div style="display: flex; gap: 20px;">
                 <div style="flex: 1;">
                     <h3>Escopo do Orçamento</h3>
-                    <p id="detalhes-escopo" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
+                    <p id="detalhes-escopo" class="view-mode-field" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
+                    <textarea id="edit-escopo" class="edit-mode-field hidden" style="width: 100%; min-height: 120px;"></textarea>
                 </div>
                 <div style="flex: 1;">
                     <h3>Dúvidas Pendentes</h3>
-                    <p id="detalhes-duvidas" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
+                    <p id="detalhes-duvidas" class="view-mode-field" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
+                    <textarea id="edit-duvidas" class="edit-mode-field hidden" style="width: 100%; min-height: 120px;"></textarea>
                 </div>
             </div>
+
+            <button id="editar-card-btn" class="submit-button">Editar</button>
+            <button id="salvar-card-btn" class="submit-button hidden">Salvar Alterações</button>
         </div>
     </div>
 

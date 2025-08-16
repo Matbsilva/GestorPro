@@ -30,23 +30,21 @@ export default async function handler(request, response) {
         - Tratamentos Específicos: Proteção contra cupins, fungos, corrosão.
 
     **2. Questões de Escopo (Foco no 'Onde', 'Quando' e 'Quem'):**
-        - **Acesso e Restrições:**
-            - Existem restrições de horário para a execução dos trabalhos (ex: condomínio, área comercial)?
-            - Existem restrições de horário para entrega/retirada de materiais e entulho?
-            - Existem restrições de ruído, poeira ou outros incômodos que precisam ser gerenciados?
-            - O acesso ao local de trabalho é direto ou requer movimentação especial (içamento, longas distâncias)?
-        - **Infraestrutura e Interfaces:**
-            - O cliente fornecerá pontos de água e energia próximos e disponíveis para uso da equipe?
-            - Nossos serviços dependem da finalização de algum trabalho de outra equipe? Se sim, qual é o cronograma previsto para eles?
-        - **Gestão e Contrato:**
-            - Qual a expectativa do cliente em relação ao prazo de execução do serviço?
-            - A limpeza da área de trabalho e o descarte do entulho gerado estão incluídos no nosso escopo?
-            - Qual o período de garantia esperado para os serviços e materiais?
-            - Qual o critério de medição para faturamento e quais as condições de pagamento?
+        - **Acesso e Restrições:** Restrições de horário para trabalho, entrega/retirada de materiais e entulho; restrições de ruído ou poeira; necessidade de içamento ou acesso especial.
+        - **Infraestrutura e Interfaces:** Se o local já fornece pontos de água e energia; se nosso trabalho depende da finalização de serviços de outras equipes e seus cronogramas.
+        - **Gestão e Contrato:** Expectativa do cliente para o cronograma; escopo de limpeza e destino do entulho; período de garantia para serviços e materiais; critério de medição e forma de pagamento.
 
     **FORMATO DA RESPOSTA (OBRIGATÓRIO):**
-    A resposta DEVE ser dividida em duas seções claras e obrigatórias: "**Questões Técnicas**" e "**Questões de Escopo**".
+    Siga estritamente este processo de duas etapas:
+    
+    **ETAPA 1: GERAÇÃO DA VERSÃO COMPLETA**
+    Primeiro, gere a lista de dúvidas completa. Ela DEVE ser dividida em duas seções claras: "**Questões Técnicas**" e "**Questões de Escopo**".
     Dentro de cada seção, use bullet points. Cada bullet point deve ter um tópico em negrito (ex: **Especificação da Madeira:**) seguido da pergunta detalhada.
+
+    **ETAPA 2: GERAÇÃO DA VERSÃO RESUMIDA**
+    Depois de gerar a versão completa, adicione um separador "---".
+    Abaixo do separador, analise a lista completa que você acabou de criar e gere uma **VERSÃO RESUMIDA**.
+    A versão resumida também deve ser dividida em "**Questões Técnicas**" e "**Questões de Escopo**", com bullet points e tópicos em negrito, mas com perguntas mais curtas e diretas, que condensa as perguntas mais cruciais em tópicos diretos, ideal para uma comunicação rápida com um cliente leigo.
 
     **ESCOPO A SER ANALISADO:**
     ---
@@ -62,9 +60,16 @@ export default async function handler(request, response) {
     });
 
     const data = await geminiResponse.json();
-    const duvidas = data.candidates[0].content.parts[0].text;
+    const textoCompleto = data.candidates[0].content.parts[0].text;
 
-    response.status(200).json({ duvidas: duvidas });
+    const partes = textoCompleto.split('---');
+    const versaoCompleta = partes[0] ? partes[0].trim() : 'Não foi possível gerar a versão completa.';
+    const versaoResumida = partes[1] ? partes[1].trim() : 'Não foi possível gerar a versão resumida.';
+
+    response.status(200).json({
+      duvidasCompleta: versaoCompleta,
+      duvidasResumida: versaoResumida
+    });
   } catch (error) {
     response.status(500).json({ message: 'Erro ao chamar a API do Gemini', error: error.message });
   }
