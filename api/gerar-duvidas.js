@@ -35,16 +35,8 @@ export default async function handler(request, response) {
         - **Gestão e Contrato:** Expectativa do cliente para o cronograma; escopo de limpeza e destino do entulho; período de garantia para serviços e materiais; critério de medição e forma de pagamento.
 
     **FORMATO DA RESPOSTA (OBRIGATÓRIO):**
-    Siga estritamente este processo de duas etapas:
-    
-    **ETAPA 1: GERAÇÃO DA VERSÃO COMPLETA**
-    Primeiro, gere a lista de dúvidas completa. Ela DEVE ser dividida em duas seções claras: "**Questões Técnicas**" e "**Questões de Escopo**".
+    A resposta DEVE ser dividida em duas seções claras e obrigatórias: "**Questões Técnicas**" e "**Questões de Escopo**".
     Dentro de cada seção, use bullet points. Cada bullet point deve ter um tópico em negrito (ex: **Especificação da Madeira:**) seguido da pergunta detalhada.
-
-    **ETAPA 2: GERAÇÃO DA VERSÃO RESUMIDA**
-    Depois de gerar a versão completa, adicione um separador "---".
-    Abaixo do separador, analise a lista completa que você acabou de criar e gere uma **VERSÃO RESUMIDA**.
-    A versão resumida também deve ser dividida em "**Questões Técnicas**" e "**Questões de Escopo**", com bullet points e tópicos em negrito, mas com perguntas mais curtas e diretas, que condensa as perguntas mais cruciais em tópicos diretos, ideal para uma comunicação rápida com um cliente leigo.
 
     **ESCOPO A SER ANALISADO:**
     ---
@@ -60,16 +52,9 @@ export default async function handler(request, response) {
     });
 
     const data = await geminiResponse.json();
-    const textoCompleto = data.candidates[0].content.parts[0].text;
+    const textoDaIA = data.candidates[0].content.parts[0].text;
 
-    const partes = textoCompleto.split('---');
-    const versaoCompleta = partes[0] ? partes[0].trim() : 'Não foi possível gerar a versão completa.';
-    const versaoResumida = partes[1] ? partes[1].trim() : 'Não foi possível gerar a versão resumida.';
-
-    response.status(200).json({
-      duvidasCompleta: versaoCompleta,
-      duvidasResumida: versaoResumida
-    });
+    response.status(200).json({ duvidas: textoDaIA });
   } catch (error) {
     response.status(500).json({ message: 'Erro ao chamar a API do Gemini', error: error.message });
   }
