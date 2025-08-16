@@ -315,6 +315,10 @@ body {
     min-height: 100px;
 }
 
+#resumo-gerado-input {
+    display: none;
+}
+
 .hidden {
     display: none;
 }

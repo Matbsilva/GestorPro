@@ -501,3 +501,44 @@ document.addEventListener('click', (event) => {
 // --- Inicialização ---
 // Carrega o estado salvo quando a página é carregada
 document.addEventListener('DOMContentLoaded', carregarEstado);
+
+// --- Lógica para Gerar Resumo ---
+const gerarResumoBtn = document.getElementById('gerar-resumo-btn');
+gerarResumoBtn.addEventListener('click', async () => {
+    const doubtsTextarea = document.getElementById('duvidas-geradas-input');
+    const resumoTextarea = document.getElementById('resumo-gerado-input');
+    const textoCompleto = doubtsTextarea.value;
+
+    if (!textoCompleto.trim() || textoCompleto === 'Gerando dúvidas...') {
+        alert('Gere as dúvidas completas primeiro antes de pedir um resumo.');
+        return;
+    }
+
+    const originalButtonText = gerarResumoBtn.textContent;
+    gerarResumoBtn.textContent = 'Resumindo...';
+    gerarResumoBtn.disabled = true;
+
+    try {
+        const response = await fetch('/api/gerar-resumo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ textoCompleto: textoCompleto }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        resumoTextarea.value = data.resumo;
+        resumoTextarea.style.display = 'block'; // Mostra a área de resumo
+
+    } catch (error) {
+        console.error('Erro ao gerar resumo:', error);
+        alert(`Erro ao se comunicar com a API de resumo: ${error.message}`);
+    } finally {
+        gerarResumoBtn.textContent = originalButtonText;
+        gerarResumoBtn.disabled = false;
+    }
+});
