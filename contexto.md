@@ -139,3 +139,14 @@ Esta seção detalha a jornada do projeto até o início da Sessão v5.0, com de
     *   `script.js`: A lógica de manipulação das abas foi implementada do zero. Um novo event listener foi adicionado para capturar cliques nos botões das abas. As funções que exibem o modal de detalhes e geram o resumo foram atualizadas para interagir corretamente com o novo sistema de abas.
 *   **Commit Associado:** `feat(ui): reimplementa interface de abas no modal de detalhes`
 ---
+---
+#### 18/08/2025 - FASE 2, TAREFA 3: Renderização de Markdown e Ajustes de UI
+
+*   **Objetivo:** Corrigir a exibição do texto formatado em Markdown vindo da IA, que aparecia como texto puro (com asteriscos). Adicionalmente, melhorar a usabilidade da lista de sugestões de clientes, que estava com a área de clique muito pequena.
+*   **Análise e Arquitetura da Solução:** O problema de renderização foi causado pela remoção acidental da biblioteca `Showdown.js` do `index.html` e pela falta de sua aplicação no `script.js`. A correção envolveu reincluir a biblioteca e usar sua função `makeHtml()` para converter o texto da IA em HTML antes de exibi-lo. Isso foi aplicado em todos os pontos relevantes para garantir consistência. O problema de usabilidade do autocomplete foi resolvido com um simples ajuste de CSS, aumentando o `padding` dos itens da lista para torná-los maiores e mais fáceis de clicar.
+*   **Modificações Realizadas:**
+    *   `index.html`: A tag `<script>` que importa a biblioteca `Showdown.js` foi restaurada.
+    *   `script.js`: Uma instância do conversor `Showdown` foi criada e utilizada para converter o conteúdo de `analiseCompleta` e `resumoCliente` para HTML antes de serem inseridos no DOM.
+    *   `style.css`: O `padding` da classe `.sugestao-item` foi aumentado para melhorar a área de clique.
+*   **Commit Associado:** `fix(ui): corrige renderização de markdown e melhora estilo do autocomplete`
+---

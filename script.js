@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Variáveis globais
     let dadosOrcamentoTemporario = {};
     let kanbanCards = []; // Array para armazenar os dados dos cards
+    const converter = new showdown.Converter(); // Instância do conversor Markdown
 
     // --- Seletores de Elementos ---
     const novoOrcamentoBtn = document.querySelector('.add-button');
@@ -136,12 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('detalhes-entrada').textContent = card.dados.entrada;
         document.getElementById('detalhes-limite').textContent = card.dados.limite;
         document.getElementById('detalhes-escopo').textContent = card.dados.escopo || 'Nenhum escopo definido.';
-        document.getElementById('detalhes-duvidas').textContent = card.dados.analiseCompleta || 'Nenhuma análise gerada.';
+        
+        // CONVERSÃO DE MARKDOWN AQUI (Dúvidas Pendentes)
+        const duvidasHtml = converter.makeHtml(card.dados.analiseCompleta || 'Nenhuma análise gerada.');
+        document.getElementById('detalhes-duvidas').innerHTML = duvidasHtml;
         
         // Resetar e esconder a seção de análise
         document.getElementById('summary-section').classList.add('hidden');
-        document.getElementById('analise-completa-pane').textContent = '';
-        document.getElementById('resumo-cliente-pane').textContent = '';
+        document.getElementById('analise-completa-pane').innerHTML = '';
+        document.getElementById('resumo-cliente-pane').innerHTML = '';
         
         // Resetar estado das abas
         analysisTabs.querySelector('.tab-button.active').classList.remove('active');
@@ -304,10 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardId = detalhesModal.dataset.cardId;
         const card = kanbanCards.find(c => c.id === cardId);
 
-        // Se já tiver os dados, apenas exibe
+        // Se já tiver os dados, apenas exibe (CONVERSÃO DE MARKDOWN AQUI)
         if (card && card.dados.resumoCliente) {
-            analisePane.textContent = card.dados.analiseCompleta;
-            resumoPane.textContent = card.dados.resumoCliente;
+            analisePane.innerHTML = converter.makeHtml(card.dados.analiseCompleta);
+            resumoPane.innerHTML = converter.makeHtml(card.dados.resumoCliente);
             summaryLoader.classList.add('hidden');
             tabsContent.classList.remove('hidden');
             return;
@@ -329,13 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
             card.dados.resumoCliente = data.resumo;
             salvarCards();
 
-            analisePane.textContent = analiseCompleta;
-            resumoPane.textContent = data.resumo;
+            // CONVERSÃO DE MARKDOWN AQUI (após fetch)
+            analisePane.innerHTML = converter.makeHtml(analiseCompleta);
+            resumoPane.innerHTML = converter.makeHtml(data.resumo);
 
         } catch (error) {
             console.error("Erro ao gerar resumo:", error);
-            resumoPane.textContent = 'Ocorreu um erro ao gerar o resumo. Tente novamente.';
-            analisePane.textContent = analiseCompleta;
+            resumoPane.innerHTML = 'Ocorreu um erro ao gerar o resumo. Tente novamente.';
+            analisePane.innerHTML = converter.makeHtml(analiseCompleta);
         } finally {
             summaryLoader.classList.add('hidden');
             tabsContent.classList.remove('hidden');
