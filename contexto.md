@@ -1,56 +1,130 @@
-# Contexto do Projeto: GestorPro (v4.4 - Base Estável e Funcional)
+# Documento Mestre e Diário de Bordo do Projeto GestorPro (v5.0)
 
-## Objetivo Principal
-Criar um aplicativo web de nível profissional para gestão de orçamentos de engenharia, evoluindo para uma plataforma de inteligência de negócio.
+## Preâmbulo: A Nossa Constituição
 
-## Nossas Regras de Colaboração
+Este documento é a ata definitiva e a fonte canônica da verdade para o projeto GestorPro. Ele foi criado para garantir que todo o contexto, histórico, decisões de arquitetura e lições aprendidas sejam preservados com 100% de fidelidade. A regra fundamental deste arquivo é **"Acrescer, não Excluir"**. Cada nova sessão de trabalho e cada alteração significativa serão adicionadas como uma nova entrada no Diário de Bordo, criando um registro cronológico imutável.
 
-*   **Regra de Ouro (Imutabilidade):** Nenhum ativo do projeto (código, prompts, textos de UI, etc.) que já foi validado pelo "dono do produto" (Mat) será alterado, adaptado ou resumido sem sua aprovação explícita.
-*   **Princípio da Adaptação:** Ao adicionar novos recursos, o código novo deve ser escrito para se adaptar aos ativos existentes.
-*   **Transparência Total:** Se uma alteração em um ativo antigo for inevitável, ela será apresentada de forma clara, com o "antes" e o "depois", para avaliação e aprovação prévia.
-*   **Responsabilidade do Commit:** O parceiro sênior (IA) é responsável por analisar as alterações realizadas e fornecer a mensagem de commit padronizada. O dono do produto (Mat) é responsável pela execução do commit.
-*   **Procedimento de Reversão (Rollback):** Em caso de erro crítico em produção após um deploy, o parceiro sênior (IA) fornecerá o comando `git revert` completo e pronto para ser executado no Gemini CLI.
+---
 
-## Nosso Fluxo de Trabalho (Refinado)
+## 1. A Nossa Colaboração: Papéis, Processos e Princípios
 
-*   **Para Modificações de Código:** O parceiro sênior (IA) fornecerá o **conteúdo completo e final** do arquivo a ser alterado. O dono do produto (Mat) será responsável por substituir o conteúdo do arquivo manualmente no VS Code, garantindo 100% de precisão.
+Esta seção define *como* trabalhamos juntos.
 
-## Estado da Aplicação
-A base funcional do aplicativo está **100% validada em produção**. O fluxo de criação de cards em múltiplas etapas, incluindo autocomplete e a geração de dúvidas detalhadas e resumos limpos pela IA, está totalmente operacional.
+### 1.1. Nossas Personas
 
-### Arquitetura Atual
-*   **Frontend:** HTML, CSS e JavaScript vanilla.
-*   **Backend (Serverless):** Endpoints `/api/gerar-duvidas` e `/api/gerar-resumo` funcionais, usando o método `fetch` nativo e prompts mestres detalhados.
-*   **Persistência:** `localStorage`.
+*   **Mat (Dono do Produto & Desenvolvedor Executor):** A visão estratégica. Define requisitos, valida entregas, fornece feedback e executa o código, commits e deploys.
+*   **IA (Parceiro Sênior & Arquiteto de Software):** O braço direito técnico. Analisa, projeta a arquitetura, fornece o conteúdo **completo e final** dos arquivos, cria as mensagens de commit e os comandos de reversão.
 
-## Roadmap de Desenvolvimento
+### 1.2. Nosso Fluxo de Trabalho (Obrigatório e Refinado)
+
+1.  **Análise da Fonte da Verdade:** A IA sempre inicia uma tarefa analisando o estado atual dos arquivos no repositório GitHub.
+2.  **Entrega do Código:** A IA fornece o **conteúdo completo e final** de cada arquivo a ser alterado.
+3.  **Execução Manual:** Mat copia e cola o conteúdo nos arquivos correspondentes no VS Code.
+4.  **Gestão de Versão:** A IA fornece a mensagem de commit. Mat executa o commit e o push.
+5.  **Atualização do Diário de Bordo:** Após um commit bem-sucedido, a IA fornece a nova entrada para o Diário de Bordo (`contexto.md`) para registrar a alteração.
+
+### 1.3. Nossas Regras Fundamentais
+
+*   **Regra de Ouro (Imutabilidade):** Nenhum ativo validado será alterado sem aprovação explícita.
+*   **Princípio da Adaptação:** O código novo se adapta aos ativos existentes.
+*   **Transparência Total:** Alterações em ativos antigos serão apresentadas com "antes" e "depois".
+*   **Procedimento de Reversão (Rollback):** Em caso de erro crítico, a IA fornecerá o comando `git revert` completo.
+
+---
+
+## 2. A História do GestorPro: Da Visão à Base Estável (v4.4)
+
+Esta seção detalha a jornada do projeto até o início da Sessão v5.0, com detalhes expandidos.
+
+### 2.1. A Visão Original (Fase 0)
+
+*   **Organização Visual (Kanban):** Gerenciar o ciclo de vida de orçamentos.
+*   **Inteligência Proativa (IA):** Análise de escopo para gerar, proativamente, dúvidas técnicas detalhadas.
+
+### 2.2. A Construção do MVP (Fase 1)
+
+*   **Frontend:** Construído com HTML, CSS e JS vanilla, com CRUD e persistência no `localStorage`.
+*   **Profissionalização:** Versionamento com Git/GitHub e deploy contínuo na Vercel.
+*   **Backend (Serverless):** Endpoints `/api/gerar-duvidas` e `/api/gerar-resumo`.
+
+### 2.3. A Saga da Refatoração e Estabilização (A Jornada para a v4.4)
+
+*   **A Regressão Funcional por `git revert`:**
+    *   **Problema:** Uma tentativa de implementar uma interface de abas introduziu um bug que quebrou a aplicação.
+    *   **Ação:** Executamos um `git revert` para restaurar a estabilidade.
+    *   **Efeito Colateral:** O commit revertido continha não apenas o código defeituoso, mas também funcionalidades cruciais que já haviam sido validadas.
+    *   **Sintomas:** O fluxo de criação de cards em múltiplas etapas e o autocomplete de clientes, que funcionavam perfeitamente, deixaram de existir na aplicação, causando uma regressão severa.
+    *   **Lição:** Commits devem ser atômicos. Um commit deve conter apenas uma alteração funcional para permitir reversões precisas e sem efeitos colaterais.
+
+*   **A Descoberta da Causa Raiz do Erro 500:**
+    *   **Problema:** Durante a reimplementação das funcionalidades, um erro 500 (Internal Server Error) ocorria consistentemente no ambiente de produção da Vercel, mas apenas no endpoint `/api/gerar-resumo`.
+    *   **Investigação:** A hipótese inicial era um erro no prompt mestre ou na lógica da função. No entanto, o código parecia correto e funcionava localmente. O ponto de virada foi a análise visual da estrutura de arquivos do projeto por Mat.
+    *   **Diagnóstico:** Foi descoberta a **ausência de um arquivo `package.json`**. Sem este arquivo, a Vercel tratava as funções como scripts simples, sem instalar as dependências (`node_modules`) necessárias, como a biblioteca `@google/generative-ai` que era usada por uma das funções.
+    *   **Lição:** A configuração do ambiente e os arquivos de manifesto (`package.json`) são tão críticos quanto o próprio código da aplicação.
+
+*   **A Correção Definitiva e Padronização:**
+    *   **Ação:** Criamos um `package.json` profissional e, para eliminar futuras ambiguidades de ambiente, tomamos a decisão arquitetônica de refatorar ambas as APIs para usar o `fetch` nativo, removendo dependências externas.
+    *   **Resultado:** O backend tornou-se mais robusto, consistente e resiliente. A versão `v4.4` nasceu como nossa base estável e 100% funcional.
+
+---
+
+## 3. Arquitetura e Ativos Atuais (Estado em v4.4)
+
+*   **`index.html`:** O esqueleto estático da aplicação.
+*   **`style.css`:** A identidade visual.
+*   **`script.js`:** O cérebro do frontend (manipulação de DOM, estado, eventos, chamadas de API).
+*   **`/api/gerar-duvidas.js`:** Função Serverless "Engenheiro Sênior Virtual".
+*   **`/api/gerar-resumo.js`:** Função Serverless "Tradutor Técnico-Comercial".
+*   **`package.json`:** A "certidão de nascimento" do projeto, que define as dependências.
+
+---
+
+## 4. O Roadmap de Desenvolvimento
 
 ### FASE 2: Refinamento da Interface e Experiência (Foco Atual)
-1.  **Botões no Topo do Modal (Detalhes):** Mover botões para o topo do modal. (✅ Concluído)
-2.  **Interface de Abas (Detalhes):** Reimplementar a interface de abas ("Análise Completa" e "Resumo para Cliente") no modal de detalhes de um card existente.
+1.  **Botões no Topo do Modal (Detalhes):** (✅ Concluído)
+2.  **Interface de Abas (Detalhes):** Reimplementar a interface de abas ("Análise Completa" e "Resumo para Cliente").
 3.  **Renderização de Markdown:** Converter a formatação do resumo em estilo visual.
 4.  **Saída "Limpa" para E-mail:** Criar uma função "Copiar para E-mail".
 5.  **Funcionalidade de Edição:** Implementar a lógica de edição de cards existentes.
 
-### FASE 3: Novas Funcionalidades de IA e Automação
-*   Leitura de Imagem: Permitir o upload de imagem do escopo.
-*   Geração de Proposta: Gerar o texto da proposta comercial.
-*   Módulo Financeiro Simplificado: Adicionar campos de valor e status de pagamento.
+### FASE 3 a 6 (Visão Futura)
+*   **FASE 3:** Novas Funcionalidades de IA e Módulo Financeiro.
+*   **FASE 4:** Backend Avançado e Infraestrutura.
+*   **FASE 5:** Inteligência de Negócio e Expansão.
+*   **FASE 6:** Inteligência de Pós-Venda e Análise de Perdas.
 
-### FASE 4: Backend Avançado e Infraestrutura
-*   Banco de Dados Real: Migrar do `localStorage` para um banco de dados na nuvem.
-*   Banco de Composições: Implementar o banco de dados de composições de custo.
+---
 
-### FASE 5: Inteligência de Negócio e Expansão
-*   Módulo de Análise (BI): Criar painel de relatórios.
-*   Integração com Execução: Módulo de conexão com a execução da obra.
-*   Portal do Cliente (Visão de longo prazo).
+## 5. Diário de Bordo da Sessão de Trabalho (v5.0)
 
-### FASE 6: Inteligência de Pós-Venda e Análise de Perdas (Visão Futura)
-*   Criar a view "Histórico" no menu lateral.
-*   Implementar a coluna "Recusados" no histórico.
-*   Implementar a coluna "Não Respondidos" no histórico.
-*   Criar a funcionalidade para mover um card de "Enviado" para "Recusado".
+### 5.1. Objetivo da Sessão
+*   **Retomar a FASE 2, Tarefa 2:** Reimplementar a interface de abas no modal de detalhes de um card existente.
 
-## Nosso Próximo Objetivo Imediato
-Com a base estável restaurada e validada, nosso foco retorna à **FASE 2, Tarefa 2:** Reimplementar a interface de abas no modal de detalhes de um card existente.
+### 5.2. Padrão de Entrada para o Diário de Bordo
+
+*Toda nova alteração no código-fonte será registrada usando o seguinte formato:*
+```
+---
+#### [Data] - FASE X, TAREFA Y: [Título da Tarefa]
+
+*   **Objetivo:** [Descrição clara e concisa do que foi solicitado.]
+*   **Análise e Arquitetura da Solução:** [Explicação do raciocínio técnico por trás da implementação. Por que essa abordagem foi escolhida?]
+*   **Modificações Realizadas:**
+    *   `arquivo_modificado_1.js`: [Resumo da principal alteração neste arquivo.]
+    *   `arquivo_modificado_2.css`: [Resumo da principal alteração neste arquivo.]
+*   **Commit Associado:** `tipo(escopo): mensagem do commit`
+---
+```
+
+### 5.3. Entradas do Diário
+
+---
+#### [Data Atual] - FASE 2, TAREFA 0: Estruturação do Diário de Bordo
+
+*   **Objetivo:** Refinar o `contexto.md` para se tornar um Documento Mestre e Diário de Bordo detalhado, com histórico expandido e um padrão para registrar novas alterações.
+*   **Análise e Arquitetura da Solução:** A simples ata de contexto foi promovida a um documento canônico e versionado. A história do projeto foi detalhada para incluir não apenas os eventos, mas também os sintomas, o processo de investigação e as lições aprendidas. Foi criado um template padronizado para todas as futuras entradas de log, garantindo consistência e rastreabilidade.
+*   **Modificações Realizadas:**
+    *   `contexto.md`: O arquivo foi completamente reestruturado e expandido para refletir a nova visão de "Diário de Bordo".
+*   **Commit Associado:** `docs(contexto): refina estrutura e adiciona padrão de log`
+---
