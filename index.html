@@ -144,18 +144,29 @@
                     <p id="detalhes-escopo" class="view-mode-field" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
                     <!-- Seção de Resumo da IA (Início) -->
 <div id="summary-section" class="hidden">
-    <hr>
-    <div class="summary-header">
-        <h4>Resumo da IA</h4>
-        <button id="copy-summary-btn" class="submit-button hidden" style="width: auto; margin-top: 0;">Copiar</button>
-    </div>
-    <div id="summary-loader" class="loader-container">
-        <div class="loader"></div>
-        <p>Analisando o escopo e gerando o resumo...</p>
-    </div>
-    <div id="summary-content" class="hidden">
-        <!-- O conteúdo do resumo gerado pela IA será inserido aqui -->
-    </div>
+<!-- Novo conteúdo para #summary-section -->
+<hr>
+<div class="summary-header">
+    <ul class="nav nav-tabs" id="analysis-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="analise-completa-tab" data-bs-toggle="tab" data-bs-target="#analise-completa-pane" type="button" role="tab" aria-controls="analise-completa-pane" aria-selected="true">Análise Completa</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="resumo-cliente-tab" data-bs-toggle="tab" data-bs-target="#resumo-cliente-pane" type="button" role="tab" aria-controls="resumo-cliente-pane" aria-selected="false">Resumo para Cliente</button>
+        </li>
+    </ul>
+    <button id="copy-summary-btn" class="submit-button hidden" style="width: auto; margin-top: 0;">Copiar</button>
+</div>
+
+<div id="summary-loader" class="loader-container">
+    <div class="loader"></div>
+    <p>Analisando o escopo e gerando o resumo...</p>
+</div>
+
+<div class="tab-content" id="analysis-tabs-content">
+    <div class="tab-pane fade show active" id="analise-completa-pane" role="tabpanel" aria-labelledby="analise-completa-tab"></div>
+    <div class="tab-pane fade" id="resumo-cliente-pane" role="tabpanel" aria-labelledby="resumo-cliente-tab"></div>
+</div>
 </div>
 <!-- Seção de Resumo da IA (Fim) -->
                     <textarea id="edit-escopo" class="edit-mode-field hidden" style="width: 100%; min-height: 120px;"></textarea>
@@ -187,6 +198,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

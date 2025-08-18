@@ -27,8 +27,8 @@ A Fase 1 (MVP e Backend) está concluída. O aplicativo está funcional, com dep
 
 ### FASE 2: Refinamento da Interface e Experiência (Foco Atual)
 1.  **Botões no Topo do Modal:** Mover os botões "Editar" e "Gerar Resumo" para o topo do modal de detalhes. (✅ Concluído)
-2.  **Layout do Resumo:** Implementar a exibição do resumo gerado pela IA.
-3.  **Renderização de Markdown:** Converter a formatação do resumo em estilo visual (negrito, listas).
+2.  **Layout do Resumo:** Implementar a exibição do resumo gerado pela IA. (✅ Concluído)
+3.  **Renderização de Markdown:** Converter a formatação do resumo em estilo visual (negrito, listas). (✅ Concluído)
 4.  **Saída "Limpa" para E-mail:** Criar uma função "Copiar para E-mail".
 5.  **Funcionalidade de Edição:** Implementar a lógica de edição de cards existentes.
 
@@ -47,4 +47,4 @@ A Fase 1 (MVP e Backend) está concluída. O aplicativo está funcional, com dep
 *   Portal do Cliente (Visão de longo prazo).
 
 ## Nosso Próximo Objetivo Imediato
-Iniciar a **FASE 2**, começando pela tarefa 1: **Mover os botões "Editar" e "Gerar Resumo" do corpo para o topo do modal de detalhes para melhorar a usabilidade.**
+Iniciar a **FASE 2**, começando pela tarefa 4: **Criar uma função "Copiar para E-mail" que formate o resumo da IA para ser colado em um e-mail de forma limpa e profissional.**
