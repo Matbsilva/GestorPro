@@ -1,19 +1,18 @@
-
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Método não permitido' });
+        return res.status(405).json({ message: 'Apenas o método POST é permitido' });
     }
 
-    console.log("Corpo da requisição para resumo:", req.body);
-
-    const duvidas = req.body.duvidas || '';
+    const { duvidas } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!duvidas) {
-        return res.status(400).json({ error: 'A lista de dúvidas detalhadas é obrigatória.' });
+        return res.status(400).json({ message: 'A lista de dúvidas é obrigatória' });
     }
-    
+    if (!apiKey) {
+        return res.status(500).json({ message: 'Chave da API não configurada no servidor' });
+    }
+
     const promptMestre = `
         **PERSONA:** Atue como um Engenheiro Civil Sênior com foco técnico-estratégico. Sua prioridade máxima é analisar criticamente prompts detalhados de escopos de obras, identificando informações essenciais, ambiguidades e pontos que podem ser simplificados.
 
@@ -47,17 +46,18 @@ export default async function handler(req, res) {
     `;
 
     try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        
-        const result = await model.generateContent(promptMestre);
-        const response = await result.response;
-        const resumoText = response.text();
+        const geminiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=' + apiKey, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptMestre }] }] })
+        });
 
-        res.status(200).json({ resumo: resumoText });
+        const data = await geminiResponse.json();
+        const textoDaIA = data.candidates[0].content.parts[0].text;
 
+        res.status(200).json({ resumo: textoDaIA });
     } catch (error) {
-        console.error("Erro ao chamar a API da IA em gerar-resumo:", error);
-        res.status(500).json({ error: 'Falha ao gerar o resumo.' });
+        console.error("Erro CRÍTICO ao chamar a API da IA em gerar-resumo:", error);
+        res.status(500).json({ message: 'Erro ao chamar a API do Gemini', error: error.message });
     }
 }

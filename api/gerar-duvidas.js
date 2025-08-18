@@ -1,20 +1,19 @@
-// Este é o nosso backend - uma Função Serverless
-export default async function handler(request, response) {
-  if (request.method !== 'POST') {
-    return response.status(405).json({ message: 'Apenas o método POST é permitido' });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Apenas o método POST é permitido' });
   }
 
-  const { escopo } = request.body;
+  const { escopo } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!escopo) {
-    return response.status(400).json({ message: 'O escopo é obrigatório' });
+    return res.status(400).json({ message: 'O escopo é obrigatório' });
   }
   if (!apiKey) {
-     return response.status(500).json({ message: 'Chave da API não configurada no servidor' });
+     return res.status(500).json({ message: 'Chave da API não configurada no servidor' });
   }
 
-  const prompt = `
+  const promptMestre = `
     **PERSONA:** Atue como um Engenheiro Civil Sênior com foco técnico-estratégico. Sua prioridade máxima é a análise crítica de escopos para identificar ambiguidades, informações faltantes, riscos (técnicos, logísticos, de interface) e oportunidades de otimização.
 
     **OBJETIVO DETALHADO:** Sua missão é analisar o escopo de serviço fornecido abaixo e gerar uma lista de perguntas de alto valor para o cliente. As perguntas devem ser práticas, diretas e focadas em obter as informações essenciais para a elaboração de um orçamento preciso, um planejamento executivo seguro e uma proposta comercial clara. 
@@ -53,14 +52,15 @@ export default async function handler(request, response) {
     const geminiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=' + apiKey, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      body: JSON.stringify({ contents: [{ parts: [{ text: promptMestre }] }] })
     });
 
     const data = await geminiResponse.json();
     const textoDaIA = data.candidates[0].content.parts[0].text;
 
-    response.status(200).json({ duvidas: textoDaIA });
+    res.status(200).json({ duvidas: textoDaIA });
   } catch (error) {
-    response.status(500).json({ message: 'Erro ao chamar a API do Gemini', error: error.message });
+    console.error("Erro CRÍTICO ao chamar a API da IA em gerar-duvidas:", error);
+    res.status(500).json({ message: 'Erro ao chamar a API do Gemini', error: error.message });
   }
 }
