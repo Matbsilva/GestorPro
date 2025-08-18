@@ -119,7 +119,6 @@
             
             <!-- Modo Visualização -->
             <div id="view-mode">
-                <h2 id="detalhes-projeto">Nome do Projeto</h2>
                 <p><strong>Cliente:</strong> <span id="detalhes-cliente"></span></p>
                 <p><strong>Prioridade:</strong> <span id="detalhes-prioridade"></span></p>
                 <p><strong>Entrada:</strong> <span id="detalhes-entrada"></span> | <strong>Limite:</strong> <span id="detalhes-limite"></span></p>
@@ -143,6 +142,22 @@
                 <div style="flex: 1;">
                     <h3>Escopo do Orçamento</h3>
                     <p id="detalhes-escopo" class="view-mode-field" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
+                    <!-- Seção de Resumo da IA (Início) -->
+<div id="summary-section" class="hidden">
+    <hr>
+    <div class="summary-header">
+        <h4>Resumo da IA</h4>
+        <button id="copy-summary-btn" class="submit-button hidden" style="width: auto; margin-top: 0;">Copiar</button>
+    </div>
+    <div id="summary-loader" class="loader-container">
+        <div class="loader"></div>
+        <p>Analisando o escopo e gerando o resumo...</p>
+    </div>
+    <div id="summary-content" class="hidden">
+        <!-- O conteúdo do resumo gerado pela IA será inserido aqui -->
+    </div>
+</div>
+<!-- Seção de Resumo da IA (Fim) -->
                     <textarea id="edit-escopo" class="edit-mode-field hidden" style="width: 100%; min-height: 120px;"></textarea>
                 </div>
                 <div style="flex: 1;">
@@ -152,11 +167,26 @@
                 </div>
             </div>
 
-            <button id="editar-card-btn" class="submit-button">Editar</button>
-            <button id="salvar-card-btn" class="submit-button hidden">Salvar Alterações</button>
+            <div class="modal-header-actions">
+    <h2 id="detalhes-projeto">Nome do Projeto</h2>
+    <div class="header-buttons">
+        <button id="gerar-resumo-detalhes-btn" class="submit-button hidden" style="background-color: #17a2b8;">Gerar Resumo</button>
+        <button id="editar-card-btn" class="submit-button">Editar</button>
+        <button id="salvar-card-btn" class="submit-button hidden">Salvar Alterações</button>
+    </div>
+</div>
+
+            <div id="resumo-container" class="hidden" style="margin-top: 20px;">
+                <div class="resumo-header">
+                    <h3>Resumo para o Cliente</h3>
+                    <button id="copiar-resumo-btn" class="submit-button" style="width: auto; margin-top: 0; background-color: #6c757d;">Copiar Resumo</button>
+                </div>
+                <div id="detalhes-resumo" style="white-space: pre-wrap; background-color: #f0f8ff; padding: 15px; border: 1px solid #d1e7fd; border-radius: 4px; min-height: 100px;"></div>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

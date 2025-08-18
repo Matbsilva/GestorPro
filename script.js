@@ -138,8 +138,8 @@ kanbanBoard.addEventListener('click', (event) => {
         const entrada = cardClicado.querySelector('.card-dates p:nth-child(1)').textContent.replace('Entrada: ', '');
         const limite = cardClicado.querySelector('.card-dates p:nth-child(2)').textContent.replace('Limite: ', '');
         const prioridade = cardClicado.querySelector('.priority').textContent;
-        const duvidas = cardClicado.dataset.duvidas || 'Nenhuma dúvida cadastrada.';
-        const escopo = cardClicado.dataset.escopo || 'Nenhum escopo cadastrado.';
+        const duvidas = cardClicado.dataset.duvidas;
+        const escopo = cardClicado.dataset.escopo;
 
         // Preenche o modal de detalhes (modo visualização)
         document.getElementById('detalhes-projeto').textContent = projeto;
@@ -147,8 +147,8 @@ kanbanBoard.addEventListener('click', (event) => {
         document.getElementById('detalhes-prioridade').textContent = prioridade;
         document.getElementById('detalhes-entrada').textContent = entrada;
         document.getElementById('detalhes-limite').textContent = limite;
-        document.getElementById('detalhes-duvidas').innerText = duvidas;
-        document.getElementById('detalhes-escopo').innerText = escopo;
+        document.getElementById('detalhes-duvidas').textContent = duvidas || 'Nenhuma dúvida cadastrada.';
+        document.getElementById('detalhes-escopo').textContent = escopo || 'Nenhum escopo definido para este projeto.';
 
         // Garante que o modal está no modo de visualização
         document.getElementById('view-mode').classList.remove('hidden');
@@ -325,6 +325,7 @@ createCardFinalBtn.addEventListener('click', () => {
 // --- Lógica de Edição do Modal de Detalhes ---
 const editarCardBtn = document.getElementById('editar-card-btn');
 const salvarCardBtn = document.getElementById('salvar-card-btn');
+const gerarResumoDetalhesBtn = document.getElementById('gerar-resumo-detalhes-btn');
 
 editarCardBtn.addEventListener('click', () => {
     // Esconde campos de visualização e mostra campos de edição
@@ -345,7 +346,90 @@ editarCardBtn.addEventListener('click', () => {
     // Troca os botões
     editarCardBtn.classList.add('hidden');
     salvarCardBtn.classList.remove('hidden');
+    gerarResumoDetalhesBtn.classList.add('hidden'); // Esconde o botão de resumo no modo de edição
 });
+
+gerarResumoDetalhesBtn.addEventListener('click', async () => {
+    const escopo = document.getElementById('detalhes-escopo').textContent;
+    
+    // Referências aos novos elementos do DOM
+    const summarySection = document.getElementById('summary-section');
+    const summaryLoader = document.getElementById('summary-loader');
+    const summaryContent = document.getElementById('summary-content');
+    const copySummaryBtn = document.getElementById('copy-summary-btn');
+
+    // 1. Prepara a UI para o carregamento
+    summarySection.classList.remove('hidden');
+    summaryLoader.classList.remove('hidden');
+    summaryContent.classList.add('hidden');
+    copySummaryBtn.classList.add('hidden');
+    summaryContent.textContent = ''; // Limpa conteúdo anterior
+
+    try {
+        // 2. Primeira chamada à API para gerar as dúvidas
+        const duvidasResponse = await fetch('/api/gerar-duvidas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ escopo }),
+        });
+
+        if (!duvidasResponse.ok) {
+            throw new Error(`Erro na API de dúvidas: ${duvidasResponse.statusText}`);
+        }
+        const duvidasData = await duvidasResponse.json();
+        const duvidas = duvidasData.duvidas;
+
+        // 3. Segunda chamada à API para gerar o resumo
+        const resumoResponse = await fetch('/api/gerar-resumo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ escopo, duvidas }),
+        });
+
+        if (!resumoResponse.ok) {
+            throw new Error(`Erro na API de resumo: ${resumoResponse.statusText}`);
+        }
+        const resumoData = await resumoResponse.json();
+        const resumo = resumoData.resumo;
+
+        // 4. Exibe o resultado com sucesso
+        summaryContent.textContent = resumo;
+        summaryLoader.classList.add('hidden');
+        summaryContent.classList.remove('hidden');
+        copySummaryBtn.classList.remove('hidden');
+
+    } catch (error) {
+        console.error("Falha ao gerar resumo:", error);
+        // 5. Exibe uma mensagem de erro na UI
+        summaryContent.textContent = 'Ocorreu um erro ao gerar o resumo. Por favor, tente novamente.';
+        summaryLoader.classList.add('hidden');
+        summaryContent.classList.remove('hidden');
+    }
+});
+
+// Event Listener para o botão de copiar resumo
+document.getElementById('copiar-resumo-btn').addEventListener('click', () => {
+    const resumoDiv = document.getElementById('detalhes-resumo');
+    const textToCopy = resumoDiv.dataset.rawText || ''; // Pega o texto original
+
+    if (!textToCopy.trim()) {
+        alert('Não há resumo para copiar.');
+        return;
+    }
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        const copyButton = document.getElementById('copiar-resumo-btn');
+        const originalText = copyButton.textContent;
+        copyButton.textContent = 'Copiado!';
+        setTimeout(() => {
+            copyButton.textContent = originalText;
+        }, 2000);
+    }).catch(err => {
+        console.error('Erro ao copiar texto: ', err);
+        alert('Falha ao copiar o resumo. Verifique as permissões do navegador.');
+    });
+});
+
 
 salvarCardBtn.addEventListener('click', () => {
     if (!cardSendoEditado) return;

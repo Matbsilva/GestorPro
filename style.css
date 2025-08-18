@@ -322,3 +322,94 @@ body {
 .hidden {
     display: none;
 }
+
+/* Estilos para o cabeçalho do Modal de Detalhes */
+.modal-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px; /* Mantém um espaçamento do conteúdo */
+    border-bottom: 1px solid #dee2e6; /* Adiciona uma linha divisória sutil */
+    padding-bottom: 15px;
+}
+
+.modal-header-actions h2 {
+    margin: 0;
+    flex-grow: 1; /* Faz o título ocupar o espaço disponível */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Evita que títulos longos quebrem o layout */
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.5rem; /* Adiciona um espaço elegante entre os botões */
+    margin-left: 1rem; /* Adiciona margem para não colar no título */
+    flex-shrink: 0; /* Impede que os botões encolham */
+}
+
+/* Garante que os botões dentro do header tenham o tamanho correto */
+.header-buttons .submit-button {
+    margin-top: 0;
+    width: auto; /* Permite que o botão se ajuste ao texto */
+    padding: 0.375rem 0.75rem; /* Padding padrão de botões Bootstrap */
+}
+
+.resumo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Estilos para a Seção de Resumo da IA */
+#summary-section {
+    margin-top: 20px;
+    padding-top: 15px;
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.summary-header h4 {
+    margin: 0;
+}
+
+#summary-content {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    white-space: pre-wrap; /* Preserva quebras de linha e espaços */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Estilos para o Indicador de Carregamento (Spinner) */
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.loader {
+    border: 5px solid #f3f3f3; /* Cinza claro */
+    border-top: 5px solid #3498db; /* Azul */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1.5s linear infinite;
+    margin-bottom: 10px;
+}
+
+ @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
