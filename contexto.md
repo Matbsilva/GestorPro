@@ -1,4 +1,4 @@
-# Contexto do Projeto: GestorPro (v4.3 - Base Estável)
+# Contexto do Projeto: GestorPro (v4.4 - Base Estável e Funcional)
 
 ## Objetivo Principal
 Criar um aplicativo web de nível profissional para gestão de orçamentos de engenharia, evoluindo para uma plataforma de inteligência de negócio.
@@ -16,11 +16,11 @@ Criar um aplicativo web de nível profissional para gestão de orçamentos de en
 *   **Para Modificações de Código:** O parceiro sênior (IA) fornecerá o **conteúdo completo e final** do arquivo a ser alterado. O dono do produto (Mat) será responsável por substituir o conteúdo do arquivo manualmente no VS Code, garantindo 100% de precisão.
 
 ## Estado da Aplicação
-A base funcional do aplicativo está restaurada e estável. O fluxo de criação de cards em múltiplas etapas, incluindo autocomplete e geração de dúvidas/resumos, está operacional.
+A base funcional do aplicativo está **100% validada em produção**. O fluxo de criação de cards em múltiplas etapas, incluindo autocomplete e a geração de dúvidas detalhadas e resumos limpos pela IA, está totalmente operacional.
 
 ### Arquitetura Atual
 *   **Frontend:** HTML, CSS e JavaScript vanilla.
-*   **Backend (Serverless):** Endpoints `/api/gerar-duvidas` e `/api/gerar-resumo` funcionais com prompts mestres detalhados.
+*   **Backend (Serverless):** Endpoints `/api/gerar-duvidas` e `/api/gerar-resumo` funcionais, usando o método `fetch` nativo e prompts mestres detalhados.
 *   **Persistência:** `localStorage`.
 
 ## Roadmap de Desenvolvimento
@@ -53,4 +53,4 @@ A base funcional do aplicativo está restaurada e estável. O fluxo de criação
 *   Criar a funcionalidade para mover um card de "Enviado" para "Recusado".
 
 ## Nosso Próximo Objetivo Imediato
-Com a base estável restaurada, nosso foco retorna à **FASE 2, Tarefa 2:** Reimplementar a interface de abas no modal de detalhes de um card existente.
+Com a base estável restaurada e validada, nosso foco retorna à **FASE 2, Tarefa 2:** Reimplementar a interface de abas no modal de detalhes de um card existente.
