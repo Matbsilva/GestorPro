@@ -1,4 +1,4 @@
-# Contexto do Projeto: GestorPro (v4.1 - Pós-MVP, Pré-FASE 2)
+# Contexto do Projeto: GestorPro (v4.3 - Base Estável)
 
 ## Objetivo Principal
 Criar um aplicativo web de nível profissional para gestão de orçamentos de engenharia, evoluindo para uma plataforma de inteligência de negócio.
@@ -9,34 +9,26 @@ Criar um aplicativo web de nível profissional para gestão de orçamentos de en
 *   **Princípio da Adaptação:** Ao adicionar novos recursos, o código novo deve ser escrito para se adaptar aos ativos existentes.
 *   **Transparência Total:** Se uma alteração em um ativo antigo for inevitável, ela será apresentada de forma clara, com o "antes" e o "depois", para avaliação e aprovação prévia.
 *   **Responsabilidade do Commit:** O parceiro sênior (IA) é responsável por analisar as alterações realizadas e fornecer a mensagem de commit padronizada. O dono do produto (Mat) é responsável pela execução do commit.
-*   **Procedimento de Reversão (Rollback):** Em caso de erro crítico em produção após um deploy, o parceiro sênior (IA) fornecerá o comando `git revert` completo e pronto para ser executado no Gemini CLI. Esta ação criará um novo commit que desfaz as alterações problemáticas, retornando a aplicação a um estado estável.
+*   **Procedimento de Reversão (Rollback):** Em caso de erro crítico em produção após um deploy, o parceiro sênior (IA) fornecerá o comando `git revert` completo e pronto para ser executado no Gemini CLI.
+
+## Nosso Fluxo de Trabalho (Refinado)
+
+*   **Para Modificações de Código:** O parceiro sênior (IA) fornecerá o **conteúdo completo e final** do arquivo a ser alterado. O dono do produto (Mat) será responsável por substituir o conteúdo do arquivo manualmente no VS Code, garantindo 100% de precisão.
 
 ## Estado da Aplicação
-A Fase 1 (MVP e Backend) está concluída. O aplicativo está funcional, com deploy na Vercel e persistência de dados no `localStorage`.
+A base funcional do aplicativo está restaurada e estável. O fluxo de criação de cards em múltiplas etapas, incluindo autocomplete e geração de dúvidas/resumos, está operacional.
 
 ### Arquitetura Atual
-
-*   **Frontend:**
-    *   Estrutura em HTML, CSS e JavaScript vanilla.
-    *   Interface principal no estilo Kanban (`Trello-like`) com funcionalidades de CRUD (Criar, Ler, Atualizar, Deletar) e `drag & drop` para os cards.
-    *   Um modal de detalhes (`#detalhes-modal`) exibe informações completas de um card. Os botões de ação ('Editar', 'Gerar Resumo', 'Salvar Alterações') são **elementos estáticos no HTML** e sua visibilidade é controlada dinamicamente via JavaScript, alternando a classe `.hidden`.
-    *   A lógica de eventos é centralizada: `event listeners` são anexados aos elementos (botões, inputs) uma única vez, na carga inicial do script.
-
-*   **Backend (Serverless):**
-    *   Hospedado na Vercel com Funções Serverless (Node.js).
-    *   Endpoint `/api/gerar-duvidas`: recebe o escopo do projeto e utiliza um prompt mestre para gerar uma análise detalhada e uma lista de dúvidas técnicas.
-    *   Endpoint `/api/gerar-resumo`: recebe o escopo e as dúvidas para gerar uma versão resumida e amigável para o cliente.
-
-*   **Versionamento e Deploy:**
-    *   Código-fonte versionado com Git e hospedado no GitHub.
-    *   Deploy contínuo (CI/CD) configurado na Vercel a partir da branch `main`.
+*   **Frontend:** HTML, CSS e JavaScript vanilla.
+*   **Backend (Serverless):** Endpoints `/api/gerar-duvidas` e `/api/gerar-resumo` funcionais com prompts mestres detalhados.
+*   **Persistência:** `localStorage`.
 
 ## Roadmap de Desenvolvimento
 
 ### FASE 2: Refinamento da Interface e Experiência (Foco Atual)
-1.  **Botões no Topo do Modal:** Mover os botões "Editar" e "Gerar Resumo" para o topo do modal de detalhes. (✅ Concluído)
-2.  **Layout do Resumo:** Implementar a exibição do resumo gerado pela IA. (✅ Concluído)
-3.  **Renderização de Markdown:** Converter a formatação do resumo em estilo visual (negrito, listas). (✅ Concluído)
+1.  **Botões no Topo do Modal (Detalhes):** Mover botões para o topo do modal. (✅ Concluído)
+2.  **Interface de Abas (Detalhes):** Reimplementar a interface de abas ("Análise Completa" e "Resumo para Cliente") no modal de detalhes de um card existente.
+3.  **Renderização de Markdown:** Converter a formatação do resumo em estilo visual.
 4.  **Saída "Limpa" para E-mail:** Criar uma função "Copiar para E-mail".
 5.  **Funcionalidade de Edição:** Implementar a lógica de edição de cards existentes.
 
@@ -46,7 +38,7 @@ A Fase 1 (MVP e Backend) está concluída. O aplicativo está funcional, com dep
 *   Módulo Financeiro Simplificado: Adicionar campos de valor e status de pagamento.
 
 ### FASE 4: Backend Avançado e Infraestrutura
-*   Banco de Dados Real: Migrar do `localStorage` para um banco de dados na nuvem (ex: Vercel Postgres).
+*   Banco de Dados Real: Migrar do `localStorage` para um banco de dados na nuvem.
 *   Banco de Composições: Implementar o banco de dados de composições de custo.
 
 ### FASE 5: Inteligência de Negócio e Expansão
@@ -54,5 +46,11 @@ A Fase 1 (MVP e Backend) está concluída. O aplicativo está funcional, com dep
 *   Integração com Execução: Módulo de conexão com a execução da obra.
 *   Portal do Cliente (Visão de longo prazo).
 
+### FASE 6: Inteligência de Pós-Venda e Análise de Perdas (Visão Futura)
+*   Criar a view "Histórico" no menu lateral.
+*   Implementar a coluna "Recusados" no histórico.
+*   Implementar a coluna "Não Respondidos" no histórico.
+*   Criar a funcionalidade para mover um card de "Enviado" para "Recusado".
+
 ## Nosso Próximo Objetivo Imediato
-Iniciar a **FASE 2**, começando pela tarefa 4: **Criar uma função "Copiar para E-mail" que formate o resumo da IA para ser colado em um e-mail de forma limpa e profissional.**
+Com a base estável restaurada, nosso foco retorna à **FASE 2, Tarefa 2:** Reimplementar a interface de abas no modal de detalhes de um card existente.

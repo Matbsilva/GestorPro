@@ -1,3 +1,6 @@
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método não permitido' });
@@ -44,23 +47,14 @@ export default async function handler(req, res) {
     `;
 
     try {
-        // Simulação da chamada à API da IA
-        const resumoTextMock = `**Questões Técnicas – Resumidas**
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        
+        const result = await model.generateContent(promptMestre);
+        const response = await result.response;
+        const resumoText = response.text();
 
-*   **Pisos:** Tipo, fabricante, modelo, dimensões, acabamento.
-*   **Revestimentos Banheiros:** Tipo, fabricante, modelo, dimensões, cores, acabamento.
-*   **Forro:** Tipo, material, acabamento, tipo de iluminação, altura.
-*   **HVAC:** BTU's, fabricante, modelo, locais de instalação (unidades internas/externas), infraestrutura elétrica existente.
-*   **Demolição Revestimentos:** Espessura/tipo, restrições de remoção de entulho.
-*   **Hidráulica Banheiros:** Alterações de layout, metais e louças (fabricante/modelo).
-
-**Questões de Escopo – Resumidas**
-
-*   **Acesso/Logística:** Restrições de acesso (horário, elevador), disponibilidade de água e energia.
-*   **Cronograma/Prazos:** Prazo total, datas específicas.
-*   **Responsabilidades:** Fornecimento de materiais (pisos, revestimentos, louças, metais).`;
-
-        res.status(200).json({ resumo: resumoTextMock });
+        res.status(200).json({ resumo: resumoText });
 
     } catch (error) {
         console.error("Erro ao chamar a API da IA em gerar-resumo:", error);
