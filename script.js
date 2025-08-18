@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Variáveis globais
     let dadosOrcamentoTemporario = {};
-    let cardEmEdicao = null;
-    let cardSendoEditado = null; // Guarda referência ao card no modal de detalhes
     let kanbanCards = []; // Array para armazenar os dados dos cards
 
     // --- Seletores de Elementos ---
@@ -13,6 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const orcamentoForm = document.getElementById('orcamento-form');
     const kanbanBoard = document.querySelector('.kanban-board');
     const gerarResumoBtn = document.getElementById('gerar-resumo-detalhes-btn');
+    const generateDoubtsBtn = document.getElementById('generate-doubts-btn');
+    const createCardFinalBtn = document.getElementById('create-card-final-btn');
+    const clientInput = document.getElementById('client-name');
+    const suggestionsContainer = document.getElementById('sugestoes-cliente');
 
     /**
      * Salva os cards no localStorage.
@@ -95,12 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (escopoVazio && naoEhPrimeiraColuna) {
                 alert("Por favor, adicione o escopo antes de mover o card.");
-                // A lógica para abrir o modal de edição pode ser adicionada aqui se necessário
+                // Para evitar que o card fique "preso", movemos ele de volta para a primeira coluna
+                document.querySelectorAll('.kanban-column')[0].appendChild(draggingCardEl);
+                card.coluna = 0;
             } else {
                 card.coluna = index;
                 column.appendChild(draggingCardEl);
-                salvarCards();
             }
+            salvarCards();
         });
     });
 
@@ -123,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = kanbanCards.find(c => c.id === cardId);
         if (!card) return;
 
-        detalhesModal.dataset.cardId = cardId; // Armazena o ID no modal
+        detalhesModal.dataset.cardId = cardId;
 
         document.getElementById('detalhes-projeto').textContent = card.dados.projeto;
         document.getElementById('detalhes-cliente').textContent = card.dados.cliente;
@@ -131,14 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('detalhes-entrada').textContent = card.dados.entrada;
         document.getElementById('detalhes-limite').textContent = card.dados.limite;
         document.getElementById('detalhes-escopo').textContent = card.dados.escopo || 'Nenhum escopo definido.';
+        document.getElementById('detalhes-duvidas').textContent = card.dados.analiseCompleta || 'Nenhuma análise gerada.';
         
-        // Resetar e esconder a seção de resumo
         document.getElementById('summary-section').classList.add('hidden');
         document.getElementById('analise-completa-pane').textContent = '';
         document.getElementById('resumo-cliente-pane').textContent = '';
         document.getElementById('copy-summary-btn').classList.add('hidden');
         document.getElementById('analysis-tabs-content').classList.add('hidden');
-
 
         document.getElementById('view-mode').classList.remove('hidden');
         document.getElementById('edit-mode').classList.add('hidden');
@@ -169,34 +172,80 @@ document.addEventListener('DOMContentLoaded', () => {
         orcamentoModal.style.display = 'block';
     });
 
+    // **Passo 1 Restaurado:** Listener do formulário inicial (Avançar)
     orcamentoForm.addEventListener('submit', (event) => {
         event.preventDefault();
         
+        dadosOrcamentoTemporario = {
+            projeto: document.getElementById('project-name').value,
+            cliente: document.getElementById('client-name').value,
+            entrada: document.getElementById('entry-date').value,
+            limite: document.getElementById('deadline-date').value,
+            prioridade: document.getElementById('prioridade-input').value,
+        };
+
+        document.getElementById('scope-input').value = '';
+        document.getElementById('duvidas-geradas-input').value = '';
+        
+        closeModal();
+        duvidasModal.style.display = 'block';
+    });
+
+    // **Passo 2 Restaurado:** Listener para "Gerar Dúvidas"
+    generateDoubtsBtn.addEventListener('click', async () => {
+        const scopeText = document.getElementById('scope-input').value;
+        const doubtsContainer = document.getElementById('duvidas-geradas-input');
+        if (!scopeText.trim()) {
+            alert('Por favor, insira o escopo do serviço.');
+            return;
+        }
+
+        doubtsContainer.value = 'Gerando dúvidas...';
+        generateDoubtsBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/gerar-duvidas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ escopo: scopeText }),
+            });
+            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+            const data = await response.json();
+            doubtsContainer.value = data.duvidas;
+        } catch (error) {
+            console.error('Erro ao gerar dúvidas:', error);
+            doubtsContainer.value = `Ocorreu um erro: ${error.message}. Tente novamente.`;
+        } finally {
+            generateDoubtsBtn.disabled = false;
+        }
+    });
+
+    // **Passo 2 Restaurado:** Listener para "Criar Card" final
+    createCardFinalBtn.addEventListener('click', () => {
+        const escopo = document.getElementById('scope-input').value;
+        const analiseCompleta = document.getElementById('duvidas-geradas-input').value;
+
         const novoCard = {
             id: `card-${new Date().getTime()}`,
-            coluna: 0,
+            coluna: escopo.trim() === '' ? 0 : 1,
             dados: {
-                projeto: document.getElementById('project-name').value,
-                cliente: document.getElementById('client-name').value,
-                entrada: document.getElementById('entry-date').value,
-                limite: document.getElementById('deadline-date').value,
-                prioridade: document.getElementById('prioridade-input').value,
-                escopo: '',
-                analiseCompleta: '',
+                ...dadosOrcamentoTemporario,
+                escopo,
+                analiseCompleta,
                 resumoCliente: ''
             }
         };
 
         kanbanCards.push(novoCard);
         const cardElemento = criarCardElemento(novoCard);
-        document.querySelectorAll('.kanban-column')[0].appendChild(cardElemento);
+        document.querySelectorAll('.kanban-column')[novoCard.coluna].appendChild(cardElemento);
         salvarCards();
         
         closeModal();
         orcamentoForm.reset();
     });
 
-    // Substitua o event listener de gerarResumoBtn por este:
+    // Listener do botão "Gerar Resumo" no modal de detalhes (com abas)
     gerarResumoBtn.addEventListener('click', async () => {
         const summarySection = document.getElementById('summary-section');
         const summaryLoader = document.getElementById('summary-loader');
@@ -212,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardId = detalhesModal.dataset.cardId;
         const card = kanbanCards.find(c => c.id === cardId);
 
-        if (card && card.dados.analiseCompleta && card.dados.resumoCliente) {
+        if (card && card.dados.resumoCliente) {
             analisePane.textContent = card.dados.analiseCompleta;
             resumoPane.textContent = card.dados.resumoCliente;
             tabsContent.classList.remove('hidden');
@@ -226,20 +275,15 @@ document.addEventListener('DOMContentLoaded', () => {
         copySummaryBtn.classList.add('hidden');
 
         const escopo = document.getElementById('detalhes-escopo').textContent;
+        const analiseCompleta = card.dados.analiseCompleta;
 
         try {
-            const duvidasResponse = await fetch('/api/gerar-duvidas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ escopo }) });
-            if (!duvidasResponse.ok) throw new Error(`Erro API Dúvidas`);
-            const duvidasData = await duvidasResponse.json();
-            const analiseCompleta = duvidasData.duvidas;
-
             const resumoResponse = await fetch('/api/gerar-resumo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ escopo, duvidas: analiseCompleta }) });
             if (!resumoResponse.ok) throw new Error(`Erro API Resumo`);
             const resumoData = await resumoResponse.json();
             const resumoCliente = resumoData.resumo;
 
             if (card) {
-                card.dados.analiseCompleta = analiseCompleta;
                 card.dados.resumoCliente = resumoCliente;
                 salvarCards();
             }
@@ -249,7 +293,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             console.error("Falha ao gerar análise:", error);
-            analisePane.textContent = 'Ocorreu um erro ao gerar a análise. Tente novamente.';
+            resumoPane.textContent = 'Ocorreu um erro ao gerar o resumo. Tente novamente.';
+            analisePane.textContent = analiseCompleta;
         } finally {
             summaryLoader.classList.add('hidden');
             tabsContent.classList.remove('hidden');
@@ -277,6 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edit-entrada').value = card.dados.entrada;
         document.getElementById('edit-limite').value = card.dados.limite;
         document.getElementById('edit-escopo').value = card.dados.escopo;
+        document.getElementById('edit-duvidas').value = card.dados.analiseCompleta;
 
         editarCardBtn.classList.add('hidden');
         salvarCardBtn.classList.remove('hidden');
@@ -294,10 +340,10 @@ document.addEventListener('DOMContentLoaded', () => {
         card.dados.entrada = document.getElementById('edit-entrada').value;
         card.dados.limite = document.getElementById('edit-limite').value;
         card.dados.escopo = document.getElementById('edit-escopo').value;
+        card.dados.analiseCompleta = document.getElementById('edit-duvidas').value;
 
         salvarCards();
         
-        // Atualiza o card na UI
         const cardElemento = document.querySelector(`.kanban-card[data-id="${cardId}"]`);
         if (cardElemento) {
             cardElemento.querySelector('.card-title').textContent = card.dados.projeto;
@@ -324,9 +370,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         kanbanCards = JSON.parse(data);
         const todasColunasEl = document.querySelectorAll('.kanban-column');
-        todasColunasEl.forEach(c => c.innerHTML = `<h3 class="column-title">${c.querySelector('.column-title').textContent}</h3>`);
+        todasColunasEl.forEach(c => {
+            const title = c.querySelector('.column-title').textContent;
+            c.innerHTML = `<h3 class="column-title">${title}</h3>`;
+        });
 
         kanbanCards.forEach(cardData => {
+            // Garante que a coluna seja um número válido
+            cardData.coluna = cardData.coluna >= 0 && cardData.coluna < todasColunasEl.length ? cardData.coluna : 0;
             const colunaEl = todasColunasEl[cardData.coluna];
             if (colunaEl) {
                 const novoCard = criarCardElemento(cardData);
@@ -334,6 +385,44 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // **Passo 3 Restaurado:** Lógica de Autocomplete de Clientes
+    function mostrarSugestoes() {
+        const valorInput = clientInput.value.toLowerCase();
+        suggestionsContainer.innerHTML = '';
+        if (valorInput.length === 0) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+
+        const clientesUnicos = [...new Set(kanbanCards.map(card => card.dados.cliente))];
+        const sugestoesFiltradas = clientesUnicos.filter(cliente => 
+            cliente.toLowerCase().startsWith(valorInput)
+        );
+
+        if (sugestoesFiltradas.length > 0) {
+            sugestoesFiltradas.forEach(sugestao => {
+                const div = document.createElement('div');
+                div.textContent = sugestao;
+                div.className = 'sugestao-item';
+                div.onclick = () => {
+                    clientInput.value = sugestao;
+                    suggestionsContainer.style.display = 'none';
+                };
+                suggestionsContainer.appendChild(div);
+            });
+            suggestionsContainer.style.display = 'block';
+        } else {
+            suggestionsContainer.style.display = 'none';
+        }
+    }
+
+    clientInput.addEventListener('input', mostrarSugestoes);
+    document.addEventListener('click', (event) => {
+        if (!clientInput.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
 
     // --- Inicialização ---
     carregarEstado();
