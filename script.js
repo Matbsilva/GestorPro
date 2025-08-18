@@ -10,11 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const detalhesModal = document.getElementById('detalhes-modal');
     const orcamentoForm = document.getElementById('orcamento-form');
     const kanbanBoard = document.querySelector('.kanban-board');
-    const gerarResumoBtn = document.getElementById('gerar-resumo-detalhes-btn');
+    const gerarResumoDetalhesBtn = document.getElementById('gerar-resumo-detalhes-btn');
     const generateDoubtsBtn = document.getElementById('generate-doubts-btn');
     const createCardFinalBtn = document.getElementById('create-card-final-btn');
     const clientInput = document.getElementById('client-name');
     const suggestionsContainer = document.getElementById('sugestoes-cliente');
+    const gerarResumoBtn = document.getElementById('gerar-resumo-btn'); // Botão no modal de criação
 
     /**
      * Salva os cards no localStorage.
@@ -97,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (escopoVazio && naoEhPrimeiraColuna) {
                 alert("Por favor, adicione o escopo antes de mover o card.");
-                // Para evitar que o card fique "preso", movemos ele de volta para a primeira coluna
                 document.querySelectorAll('.kanban-column')[0].appendChild(draggingCardEl);
                 card.coluna = 0;
             } else {
@@ -172,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         orcamentoModal.style.display = 'block';
     });
 
-    // **Passo 1 Restaurado:** Listener do formulário inicial (Avançar)
     orcamentoForm.addEventListener('submit', (event) => {
         event.preventDefault();
         
@@ -186,12 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('scope-input').value = '';
         document.getElementById('duvidas-geradas-input').value = '';
+        document.getElementById('resumo-container').classList.add('hidden');
         
         closeModal();
         duvidasModal.style.display = 'block';
     });
 
-    // **Passo 2 Restaurado:** Listener para "Gerar Dúvidas"
     generateDoubtsBtn.addEventListener('click', async () => {
         const scopeText = document.getElementById('scope-input').value;
         const doubtsContainer = document.getElementById('duvidas-geradas-input');
@@ -220,10 +219,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // **Passo 2 Restaurado:** Listener para "Criar Card" final
+    // Listener para "Gerar Resumo" no modal de criação
+    gerarResumoBtn.addEventListener('click', async () => {
+        const escopo = document.getElementById('scope-input').value;
+        const duvidas = document.getElementById('duvidas-geradas-input').value;
+
+        if (!duvidas.trim()) {
+            alert('É necessário primeiro gerar as dúvidas.');
+            return;
+        }
+
+        const resumoContainer = document.getElementById('resumo-container');
+        const resumoOutput = document.getElementById('resumo-output');
+        
+        gerarResumoBtn.textContent = 'Resumindo...';
+        gerarResumoBtn.disabled = true;
+        resumoContainer.classList.remove('hidden');
+        resumoOutput.value = '';
+
+        try {
+            const response = await fetch('/api/gerar-resumo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ escopo, duvidas }),
+            });
+
+            if (!response.ok) throw new Error('Falha na resposta da API de resumo');
+
+            const data = await response.json();
+            resumoOutput.value = data.resumo;
+
+        } catch (error) {
+            console.error('Erro ao gerar resumo:', error);
+            resumoOutput.value = 'Não foi possível gerar o resumo.';
+        } finally {
+            gerarResumoBtn.textContent = 'Gerar Resumo para Cliente';
+            gerarResumoBtn.disabled = false;
+        }
+    });
+
     createCardFinalBtn.addEventListener('click', () => {
         const escopo = document.getElementById('scope-input').value;
         const analiseCompleta = document.getElementById('duvidas-geradas-input').value;
+        const resumoCliente = document.getElementById('resumo-output').value;
 
         const novoCard = {
             id: `card-${new Date().getTime()}`,
@@ -232,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ...dadosOrcamentoTemporario,
                 escopo,
                 analiseCompleta,
-                resumoCliente: ''
+                resumoCliente
             }
         };
 
@@ -246,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Listener do botão "Gerar Resumo" no modal de detalhes (com abas)
-    gerarResumoBtn.addEventListener('click', async () => {
+    gerarResumoDetalhesBtn.addEventListener('click', async () => {
         const summarySection = document.getElementById('summary-section');
         const summaryLoader = document.getElementById('summary-loader');
         const copySummaryBtn = document.getElementById('copy-summary-btn');
@@ -326,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         editarCardBtn.classList.add('hidden');
         salvarCardBtn.classList.remove('hidden');
-        gerarResumoBtn.classList.add('hidden');
+        gerarResumoDetalhesBtn.classList.add('hidden');
     });
 
     salvarCardBtn.addEventListener('click', () => {
@@ -376,7 +414,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         kanbanCards.forEach(cardData => {
-            // Garante que a coluna seja um número válido
             cardData.coluna = cardData.coluna >= 0 && cardData.coluna < todasColunasEl.length ? cardData.coluna : 0;
             const colunaEl = todasColunasEl[cardData.coluna];
             if (colunaEl) {
@@ -386,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // **Passo 3 Restaurado:** Lógica de Autocomplete de Clientes
+    // Lógica de Autocomplete de Clientes
     function mostrarSugestoes() {
         const valorInput = clientInput.value.toLowerCase();
         suggestionsContainer.innerHTML = '';

@@ -103,7 +103,10 @@
             <textarea id="duvidas-geradas-input" rows="5" placeholder="A lista de dúvidas completa gerada pela IA aparecerá aqui..."></textarea>
             <button type="button" id="copiar-duvidas-btn" class="submit-button" style="margin-top: 10px; background-color: #6c757d;">Copiar Dúvidas</button>
 
-            <textarea id="resumo-gerado-input" rows="5" placeholder="O resumo para o cliente aparecerá aqui..." style="margin-top: 15px;"></textarea>
+            <div id="resumo-container" class="hidden">
+                <label for="resumo-output">Resumo para o cliente aparecerá aqui:</label>
+                <textarea id="resumo-output" rows="5" readonly></textarea>
+            </div>
 
             <div class="action-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
                 <button id="create-card-final-btn" class="submit-button" style="width: 50%;">Criar Card</button>
