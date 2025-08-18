@@ -1,0 +1,22 @@
+{
+  "name": "gestor-orcamentos",
+  "version": "1.0.0",
+  "description": "Aplicativo web para gestão de orçamentos de engenharia com integração de IA",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Matbsilva/GestorPro.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Matbsilva/GestorPro/issues"
+  },
+  "homepage": "https://github.com/Matbsilva/GestorPro#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1"
+  }
+}
