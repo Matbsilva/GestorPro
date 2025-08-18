@@ -3,6 +3,12 @@
 ## Objetivo Principal
 Criar um aplicativo web de nível profissional para gestão de orçamentos de engenharia, evoluindo para uma plataforma de inteligência de negócio.
 
+## Nossas Regras de Colaboração
+
+*   **Regra de Ouro (Imutabilidade):** Nenhum ativo do projeto (código, prompts, textos de UI, etc.) que já foi validado pelo "dono do produto" (Mat) será alterado, adaptado ou resumido sem sua aprovação explícita.
+*   **Princípio da Adaptação:** Ao adicionar novos recursos, o código novo deve ser escrito para se adaptar aos ativos existentes.
+*   **Transparência Total:** Se uma alteração em um ativo antigo for inevitável, ela será apresentada de forma clara, com o "antes" e o "depois", para avaliação e aprovação prévia.
+
 ## Estado da Aplicação
 A Fase 1 (MVP e Backend) está concluída. O aplicativo está funcional, com deploy na Vercel e persistência de dados no `localStorage`.
 

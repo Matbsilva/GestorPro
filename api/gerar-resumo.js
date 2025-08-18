@@ -1,5 +1,3 @@
-// Exemplo: import { GoogleGenerativeAI } from "@google/generative-ai";
-
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método não permitido' });
@@ -7,17 +5,12 @@ export default async function handler(req, res) {
 
     console.log("Corpo da requisição para resumo:", req.body);
 
-    const escopo = req.body.escopo || '';
-    const duvidas = req.body.duvidas || ''; // No prompt antigo, isso era 'textoCompleto'
+    const duvidas = req.body.duvidas || '';
 
-    if (!duvidas) { // A validação antiga checava apenas o 'textoCompleto'
+    if (!duvidas) {
         return res.status(400).json({ error: 'A lista de dúvidas detalhadas é obrigatória.' });
     }
     
-    // const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    // const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-    // --- PROMPT MESTRE ORIGINAL E COMPLETO RESTAURADO ---
     const promptMestre = `
         **PERSONA:** Atue como um Engenheiro Civil Sênior com foco técnico-estratégico. Sua prioridade máxima é analisar criticamente prompts detalhados de escopos de obras, identificando informações essenciais, ambiguidades e pontos que podem ser simplificados.
 
@@ -51,20 +44,23 @@ export default async function handler(req, res) {
     `;
 
     try {
-        // --- Simulação da chamada à API da IA ---
-        // const result = await model.generateContent(promptMestre);
-        // const response = await result.response;
-        // const resumoText = response.text();
-
+        // Simulação da chamada à API da IA
         const resumoTextMock = `**Questões Técnicas – Resumidas**
 
-*   **Silestone:** Qual a cor, espessura e acabamento desejados?
-*   **Bancada:** Quais as dimensões exatas (comprimento, largura, profundidade)?
-*   **Cuba e Torneira:** Quais os modelos específicos?
-*   **Tomada 220V:** Qual a localização exata para o forno?
-*   **Fita de LED:** Qual o tipo (voltagem, cor, comprimento)?`;
+*   **Pisos:** Tipo, fabricante, modelo, dimensões, acabamento.
+*   **Revestimentos Banheiros:** Tipo, fabricante, modelo, dimensões, cores, acabamento.
+*   **Forro:** Tipo, material, acabamento, tipo de iluminação, altura.
+*   **HVAC:** BTU's, fabricante, modelo, locais de instalação (unidades internas/externas), infraestrutura elétrica existente.
+*   **Demolição Revestimentos:** Espessura/tipo, restrições de remoção de entulho.
+*   **Hidráulica Banheiros:** Alterações de layout, metais e louças (fabricante/modelo).
 
-        res.status(200).json({ resumo: resumoTextMock }); // No ambiente real, usar: { resumo: resumoText }
+**Questões de Escopo – Resumidas**
+
+*   **Acesso/Logística:** Restrições de acesso (horário, elevador), disponibilidade de água e energia.
+*   **Cronograma/Prazos:** Prazo total, datas específicas.
+*   **Responsabilidades:** Fornecimento de materiais (pisos, revestimentos, louças, metais).`;
+
+        res.status(200).json({ resumo: resumoTextMock });
 
     } catch (error) {
         console.error("Erro ao chamar a API da IA em gerar-resumo:", error);
