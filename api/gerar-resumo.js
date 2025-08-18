@@ -5,43 +5,49 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Método não permitido' });
     }
 
-    // Adiciona um log para depuração. Veremos isso nos logs da Vercel.
-    console.log("Corpo da requisição recebida:", req.body);
+    console.log("Corpo da requisição para resumo:", req.body);
 
-    // --- LÓGICA DE VALIDAÇÃO ROBUSTA ---
-    // Em vez de quebrar se os campos não existirem, nós os tratamos como strings vazias.
     const escopo = req.body.escopo || '';
-    const duvidas = req.body.duvidas || '';
+    const duvidas = req.body.duvidas || ''; // No prompt antigo, isso era 'textoCompleto'
 
-    // Se ambos estiverem vazios após a verificação, aí sim é um erro.
-    if (!escopo && !duvidas) {
-        return res.status(400).json({ error: 'É necessário fornecer ao menos o escopo ou as dúvidas.' });
+    if (!duvidas) { // A validação antiga checava apenas o 'textoCompleto'
+        return res.status(400).json({ error: 'A lista de dúvidas detalhadas é obrigatória.' });
     }
     
     // const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     // const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
+    // --- PROMPT MESTRE ORIGINAL E COMPLETO RESTAURADO ---
     const promptMestre = `
-        **PERSONA:** Você é um assistente de IA especialista em engenharia e orçamentos.
+        **PERSONA:** Atue como um Engenheiro Civil Sênior com foco técnico-estratégico. Sua prioridade máxima é analisar criticamente prompts detalhados de escopos de obras, identificando informações essenciais, ambiguidades e pontos que podem ser simplificados.
 
-        **TAREFA:** Analise o escopo do projeto e a lista de dúvidas técnicas detalhadas. Crie um resumo conciso e claro, focado nos pontos-chave que precisam de definição do cliente.
+        **OBJETIVO DETALHADO:** Receba um prompt detalhado contendo todas as questões técnicas e de escopo de uma obra civil. Sua missão é gerar uma **versão compacta e objetiva** dessas questões, mantendo as informações essenciais para planejamento, orçamento e proposta, mas em formato **direto, claro e de fácil resposta para clientes leigos ou ocupados**.
 
-        **REGRAS:**
-        1.  O resumo deve ser em formato de lista (bullet points).
-        2.  **OMITA COMPLETAMENTE** qualquer jargão interno como "Criticidade", "Impacto no Orçamento" ou "Representatividade". Foque apenas na pergunta técnica.
-        3.  Seja direto e objetivo.
+        **BASE DE PENSAMENTO:**
+        - Analise cada questão detalhada do prompt original e selecione apenas os pontos que impactam diretamente a execução, orçamento ou decisão do cliente.
+        - Mantenha o foco em clareza e praticidade, evitando repetições ou detalhes excessivos que não sejam críticos.
+        - Preserve a lógica e a ordem das seções do prompt original (Questões Técnicas / Questões de Escopo).
+        - Inclua sugestões de agrupamento de itens quando possível para facilitar a leitura.
 
-        **ESCOPO DO PROJETO:**
-        ---
-        ${escopo}
-        ---
+        **FORMATO DA RESPOSTA (OBRIGATÓRIO):**
+        - Divida a resposta em duas seções: "**Questões Técnicas – Resumidas**" e "**Questões de Escopo – Resumidas**".
+        - Cada bullet point deve ser curto, direto, incluindo apenas os elementos essenciais (tipo, dimensão, modelo, pontos críticos, localização, etc.).
+        - **NÃO INCLUA** jargões internos como "Criticidade" ou "Representatividade".
 
-        **DÚVIDAS DETALHADAS:**
+        **EXEMPLO DE ESTILO PARA SAÍDA COMPACTA:**
+        - **Portas:** material, dimensões, modelo, ferragens e acabamento.
+        - **Pisos/Contrapiso:** tipo por ambiente, dimensões, cor, fornecedor, metragem, contrapiso (espessura, acabamento, telado ou não), descarte do piso antigo.
+        - **Forro/Drywall/Reboco:** espessura, acabamento, estrutura, pontos de iluminação, reforço/acústica, nivelamento, proteção contra fissuras.
+        - **Impermeabilização:** tipo, área, pontos críticos, tratamento de juntas e ralos.
+        - **HVAC:** tipo de equipamento, capacidade BTU/h, localização interna/externa, distância entre unidades, ponto de tomada, drenagem, ajustes elétricos.
+        - **Pintura:** tipo de tinta, acabamento, número de demãos, preparação das superfícies, área total.
+        - **Instalações:** alterações elétricas/hidráulicas necessárias, integração com outros sistemas.
+        - **Escopo:** restrições de horário, transporte de materiais/entulho, armazenamento, interfaces com outras equipes, cronograma, responsabilidades, limpeza, medição, pagamento, garantia.
+
+        **LISTA DE DÚVIDAS PARA RESUMIR:**
         ---
         ${duvidas}
         ---
-
-        **PRODUZA APENAS O RESUMO EM FORMATO DE LISTA.**
     `;
 
     try {
@@ -50,11 +56,13 @@ export default async function handler(req, res) {
         // const response = await result.response;
         // const resumoText = response.text();
 
-        const resumoTextMock = `
-*   Qual o modelo e acabamento desejado para o Silestone da bancada?
-*   Quais as dimensões exatas da nova bancada?
-*   Qual a marca e modelo da cuba e torneira gourmet?
-*   Onde será o ponto exato para a nova tomada de 220V?`;
+        const resumoTextMock = `**Questões Técnicas – Resumidas**
+
+*   **Silestone:** Qual a cor, espessura e acabamento desejados?
+*   **Bancada:** Quais as dimensões exatas (comprimento, largura, profundidade)?
+*   **Cuba e Torneira:** Quais os modelos específicos?
+*   **Tomada 220V:** Qual a localização exata para o forno?
+*   **Fita de LED:** Qual o tipo (voltagem, cor, comprimento)?`;
 
         res.status(200).json({ resumo: resumoTextMock }); // No ambiente real, usar: { resumo: resumoText }
 
