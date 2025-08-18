@@ -17,11 +17,19 @@ Esta seção define *como* trabalhamos juntos.
 
 ### 1.2. Nosso Fluxo de Trabalho (Obrigatório e Refinado)
 
-1.  **Análise da Fonte da Verdade:** A IA sempre inicia uma tarefa analisando o estado atual dos arquivos no repositório GitHub.
-2.  **Entrega do Código:** A IA fornece o **conteúdo completo e final** de cada arquivo a ser alterado.
-3.  **Execução Manual:** Mat copia e cola o conteúdo nos arquivos correspondentes no VS Code.
-4.  **Gestão de Versão:** A IA fornece a mensagem de commit. Mat executa o commit e o push.
-5.  **Atualização do Diário de Bordo:** Após um commit bem-sucedido, a IA fornece a nova entrada para o Diário de Bordo (`contexto.md`) para registrar a alteração.
+Adotamos o modelo de **Git Flow Simplificado** para garantir a estabilidade do nosso produto e a segurança no desenvolvimento. O fluxo se baseia em dois tipos de branches principais:
+
+*   **`main`:** Este é o branch principal, representando a versão de produção **estável e funcional** do projeto. Ninguém deve enviar commits diretamente para este branch.
+*   **`develop` (ou `feature/*`):** Estes são branches de trabalho. Toda nova funcionalidade, correção ou experimento será feito em um branch separado criado a partir do `main`.
+
+**Nosso processo passo a passo é:**
+
+1.  **Início da Tarefa:** Para iniciar uma nova tarefa, a IA criará um novo branch de trabalho a partir do `main` (ex: `feature/nome-da-tarefa`).
+2.  **Desenvolvimento Isolado:** Todo o trabalho da IA (criação e modificação de arquivos) será realizado exclusivamente neste novo branch. Faremos quantos commits forem necessários aqui, com a segurança de que o `main` permanece intacto.
+3.  **Análise e Validação:** Mat valida as alterações no ambiente de testes (Vercel) a partir do branch de trabalho.
+4.  **Merge (Incorporação):** Uma vez que a tarefa é concluída e aprovada, a IA fará o "merge" do branch de trabalho de volta para o `main`. Isso incorpora a nova funcionalidade à versão estável.
+5.  **Atualização do Diário de Bordo:** A IA atualiza o `contexto.md` com a entrada da tarefa finalizada.
+6.  **Limpeza:** O branch de trabalho é removido após o merge bem-sucedido.
 
 ### 1.3. Nossas Regras Fundamentais
 
