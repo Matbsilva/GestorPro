@@ -150,3 +150,14 @@ Esta seção detalha a jornada do projeto até o início da Sessão v5.0, com de
     *   `style.css`: O `padding` da classe `.sugestao-item` foi aumentado para melhorar a área de clique.
 *   **Commit Associado:** `fix(ui): corrige renderização de markdown e melhora estilo do autocomplete`
 ---
+---
+#### 18/08/2025 - FASE 2, TAREFA 3.1: Renderização de Markdown no Modal de Criação
+
+*   **Objetivo:** Corrigir a exibição do texto formatado em Markdown no modal de criação de card, que ainda exibia o texto puro com asteriscos.
+*   **Análise e Arquitetura da Solução:** Foi identificado que os campos de exibição para as dúvidas e o resumo da IA no modal de criação eram elementos `<textarea>`, que não suportam a renderização de HTML. A solução foi substituir esses elementos por `<div>`s. Para manter a consistência visual, uma nova classe CSS (`.ai-output-box`) foi criada para estilizar esses `<div>`s de forma semelhante aos textareas. O `script.js` foi então ajustado para usar `.innerHTML` e o conversor `Showdown` para popular esses `<div>`s com o conteúdo HTML formatado.
+*   **Modificações Realizadas:**
+    *   `index.html`: Os elementos `<textarea>` para `duvidas-geradas-input` e `resumo-output` foram substituídos por `<div>`s com novos IDs.
+    *   `style.css`: Adicionada a classe `.ai-output-box` para estilizar os novos `<div>`s.
+    *   `script.js`: As funções `generateDoubtsBtn` e `gerarResumoBtn` foram atualizadas para usar `.innerHTML` e o conversor Markdown nos novos elementos.
+*   **Commit Associado:** `fix(ui): renderiza markdown no modal de criação de card`
+---

@@ -204,13 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     generateDoubtsBtn.addEventListener('click', async () => {
         const scopeText = document.getElementById('scope-input').value;
-        const doubtsContainer = document.getElementById('duvidas-geradas-input');
+        const doubtsContainer = document.getElementById('duvidas-geradas-output');
         if (!scopeText.trim()) {
             alert('Por favor, insira o escopo do serviço.');
             return;
         }
 
-        doubtsContainer.value = 'Gerando dúvidas...';
+        doubtsContainer.innerHTML = 'Gerando dúvidas...';
         generateDoubtsBtn.disabled = true;
 
         try {
@@ -221,10 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
             const data = await response.json();
-            doubtsContainer.value = data.duvidas;
+            dadosOrcamentoTemporario.analiseCompleta = data.duvidas; // Salva o texto puro
+            doubtsContainer.innerHTML = converter.makeHtml(data.duvidas); // Exibe como HTML
         } catch (error) {
             console.error('Erro ao gerar dúvidas:', error);
-            doubtsContainer.value = `Ocorreu um erro: ${error.message}. Tente novamente.`;
+            doubtsContainer.innerHTML = `<p style="color: red;">Ocorreu um erro: ${error.message}. Tente novamente.</p>`;
         } finally {
             generateDoubtsBtn.disabled = false;
         }
@@ -232,9 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gerarResumoBtn.addEventListener('click', async () => {
         const escopo = document.getElementById('scope-input').value;
-        const duvidas = document.getElementById('duvidas-geradas-input').value;
+        const duvidas = dadosOrcamentoTemporario.analiseCompleta; // Usa o texto puro salvo
 
-        if (!duvidas.trim()) {
+        if (!duvidas || !duvidas.trim()) {
             alert('É necessário primeiro gerar as dúvidas.');
             return;
         }
@@ -245,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gerarResumoBtn.textContent = 'Resumindo...';
         gerarResumoBtn.disabled = true;
         resumoContainer.classList.remove('hidden');
-        resumoOutput.value = '';
+        resumoOutput.innerHTML = '';
 
         try {
             const response = await fetch('/api/gerar-resumo', {
@@ -257,11 +258,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Falha na resposta da API de resumo');
 
             const data = await response.json();
-            resumoOutput.value = data.resumo;
+            dadosOrcamentoTemporario.resumoCliente = data.resumo; // Salva o texto puro
+            resumoOutput.innerHTML = converter.makeHtml(data.resumo); // Exibe como HTML
 
         } catch (error) {
             console.error('Erro ao gerar resumo:', error);
-            resumoOutput.value = 'Não foi possível gerar o resumo.';
+            resumoOutput.innerHTML = '<p style="color: red;">Não foi possível gerar o resumo.</p>';
         } finally {
             gerarResumoBtn.textContent = 'Gerar Resumo para Cliente';
             gerarResumoBtn.disabled = false;
@@ -270,17 +272,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createCardFinalBtn.addEventListener('click', () => {
         const escopo = document.getElementById('scope-input').value;
-        const analiseCompleta = document.getElementById('duvidas-geradas-input').value;
-        const resumoCliente = document.getElementById('resumo-output').value;
-
+        
         const novoCard = {
             id: `card-${new Date().getTime()}`,
             coluna: escopo.trim() === '' ? 0 : 1,
             dados: {
                 ...dadosOrcamentoTemporario,
                 escopo,
-                analiseCompleta,
-                resumoCliente
+                // analiseCompleta e resumoCliente já estão salvos em dadosOrcamentoTemporario
             }
         };
 
