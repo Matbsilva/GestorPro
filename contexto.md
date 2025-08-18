@@ -128,3 +128,14 @@ Esta seção detalha a jornada do projeto até o início da Sessão v5.0, com de
     *   `contexto.md`: O arquivo foi completamente reestruturado e expandido para refletir a nova visão de "Diário de Bordo".
 *   **Commit Associado:** `docs(contexto): refina estrutura e adiciona padrão de log`
 ---
+---
+#### 18/08/2025 - FASE 2, TAREFA 2: Reimplementação da Interface de Abas
+
+*   **Objetivo:** Reimplementar a funcionalidade de abas ("Análise Completa" e "Resumo para Cliente") no modal de detalhes, que foi perdida após uma reversão de commit anterior.
+*   **Análise e Arquitetura da Solução:** A tentativa anterior de implementação de abas utilizava atributos e classes do Bootstrap 5 que não estavam funcionando como esperado, provavelmente por falta do JavaScript do Bootstrap ou por uma estrutura de HTML incorreta. A nova arquitetura abandona completamente a dependência de frameworks para esta funcionalidade. Foi criada uma solução pura e robusta com HTML, CSS e JavaScript "vanilla". A lógica agora é controlada por um único event listener no contêiner das abas, que simplesmente alterna classes `.active` para mostrar e esconder o conteúdo relevante. Esta abordagem é mais leve, performática e elimina pontos de falha externos.
+*   **Modificações Realizadas:**
+    *   `index.html`: A estrutura HTML da seção de abas no modal de detalhes foi completamente simplificada, removendo todos os atributos `data-bs-*` e `role` e adotando uma estrutura de botões e painéis com IDs e classes claras.
+    *   `style.css`: Foram adicionados novos estilos CSS para gerenciar a aparência das abas (ativa e inativa) e a visibilidade dos painéis de conteúdo. Estilos antigos e não utilizados relacionados às classes `.nav-link` foram removidos.
+    *   `script.js`: A lógica de manipulação das abas foi implementada do zero. Um novo event listener foi adicionado para capturar cliques nos botões das abas. As funções que exibem o modal de detalhes e geram o resumo foram atualizadas para interagir corretamente com o novo sistema de abas.
+*   **Commit Associado:** `feat(ui): reimplementa interface de abas no modal de detalhes`
+---

@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const createCardFinalBtn = document.getElementById('create-card-final-btn');
     const clientInput = document.getElementById('client-name');
     const suggestionsContainer = document.getElementById('sugestoes-cliente');
-    const gerarResumoBtn = document.getElementById('gerar-resumo-btn'); // Botão no modal de criação
+    const gerarResumoBtn = document.getElementById('gerar-resumo-btn');
+    const analysisTabs = document.getElementById('analysis-tabs');
 
     /**
      * Salva os cards no localStorage.
@@ -137,11 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('detalhes-escopo').textContent = card.dados.escopo || 'Nenhum escopo definido.';
         document.getElementById('detalhes-duvidas').textContent = card.dados.analiseCompleta || 'Nenhuma análise gerada.';
         
+        // Resetar e esconder a seção de análise
         document.getElementById('summary-section').classList.add('hidden');
         document.getElementById('analise-completa-pane').textContent = '';
         document.getElementById('resumo-cliente-pane').textContent = '';
-        document.getElementById('copy-summary-btn').classList.add('hidden');
-        document.getElementById('analysis-tabs-content').classList.add('hidden');
+        
+        // Resetar estado das abas
+        analysisTabs.querySelector('.tab-button.active').classList.remove('active');
+        analysisTabs.querySelector('.tab-button').classList.add('active');
+        document.querySelector('.tab-pane.active').classList.remove('active');
+        document.getElementById('analise-completa-pane').classList.add('active');
+
 
         document.getElementById('view-mode').classList.remove('hidden');
         document.getElementById('edit-mode').classList.add('hidden');
@@ -219,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Listener para "Gerar Resumo" no modal de criação
     gerarResumoBtn.addEventListener('click', async () => {
         const escopo = document.getElementById('scope-input').value;
         const duvidas = document.getElementById('duvidas-geradas-input').value;
@@ -283,62 +289,73 @@ document.addEventListener('DOMContentLoaded', () => {
         orcamentoForm.reset();
     });
 
-    // Listener do botão "Gerar Resumo" no modal de detalhes (com abas)
+    // Listener do botão "Gerar Análise" no modal de detalhes
     gerarResumoDetalhesBtn.addEventListener('click', async () => {
         const summarySection = document.getElementById('summary-section');
         const summaryLoader = document.getElementById('summary-loader');
-        const copySummaryBtn = document.getElementById('copy-summary-btn');
+        const tabsContent = document.getElementById('analysis-tabs-content');
         const analisePane = document.getElementById('analise-completa-pane');
         const resumoPane = document.getElementById('resumo-cliente-pane');
-        const tabsContent = document.getElementById('analysis-tabs-content');
 
         summarySection.classList.remove('hidden');
-        analisePane.textContent = '';
-        resumoPane.textContent = '';
+        tabsContent.classList.add('hidden');
+        summaryLoader.classList.remove('hidden');
         
         const cardId = detalhesModal.dataset.cardId;
         const card = kanbanCards.find(c => c.id === cardId);
 
+        // Se já tiver os dados, apenas exibe
         if (card && card.dados.resumoCliente) {
             analisePane.textContent = card.dados.analiseCompleta;
             resumoPane.textContent = card.dados.resumoCliente;
-            tabsContent.classList.remove('hidden');
-            copySummaryBtn.classList.remove('hidden');
             summaryLoader.classList.add('hidden');
+            tabsContent.classList.remove('hidden');
             return;
         }
 
-        summaryLoader.classList.remove('hidden');
-        tabsContent.classList.add('hidden');
-        copySummaryBtn.classList.add('hidden');
-
-        const escopo = document.getElementById('detalhes-escopo').textContent;
+        // Se não, busca na API
+        const escopo = card.dados.escopo;
         const analiseCompleta = card.dados.analiseCompleta;
 
         try {
-            const resumoResponse = await fetch('/api/gerar-resumo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ escopo, duvidas: analiseCompleta }) });
-            if (!resumoResponse.ok) throw new Error(`Erro API Resumo`);
-            const resumoData = await resumoResponse.json();
-            const resumoCliente = resumoData.resumo;
-
-            if (card) {
-                card.dados.resumoCliente = resumoCliente;
-                salvarCards();
-            }
+            const response = await fetch('/api/gerar-resumo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ escopo, duvidas: analiseCompleta })
+            });
+            if (!response.ok) throw new Error('Falha ao gerar resumo');
+            const data = await response.json();
+            
+            card.dados.resumoCliente = data.resumo;
+            salvarCards();
 
             analisePane.textContent = analiseCompleta;
-            resumoPane.textContent = resumoCliente;
-            
+            resumoPane.textContent = data.resumo;
+
         } catch (error) {
-            console.error("Falha ao gerar análise:", error);
+            console.error("Erro ao gerar resumo:", error);
             resumoPane.textContent = 'Ocorreu um erro ao gerar o resumo. Tente novamente.';
             analisePane.textContent = analiseCompleta;
         } finally {
             summaryLoader.classList.add('hidden');
             tabsContent.classList.remove('hidden');
-            copySummaryBtn.classList.remove('hidden');
         }
     });
+
+    // --- Lógica de Troca de Abas ---
+    analysisTabs.addEventListener('click', (event) => {
+        if (!event.target.classList.contains('tab-button')) return;
+
+        // Desativa botão e painel ativos
+        analysisTabs.querySelector('.tab-button.active').classList.remove('active');
+        document.querySelector('.tab-pane.active').classList.remove('active');
+
+        // Ativa o novo
+        const targetPaneId = event.target.dataset.target;
+        event.target.classList.add('active');
+        document.getElementById(targetPaneId).classList.add('active');
+    });
+
 
     // --- Lógica de Edição do Modal de Detalhes ---
     const editarCardBtn = document.getElementById('editar-card-btn');
@@ -365,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         editarCardBtn.classList.add('hidden');
         salvarCardBtn.classList.remove('hidden');
         gerarResumoDetalhesBtn.classList.add('hidden');
+        document.getElementById('summary-section').classList.add('hidden');
     });
 
     salvarCardBtn.addEventListener('click', () => {

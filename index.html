@@ -120,6 +120,15 @@
         <div class="modal-content">
             <span class="close-button">&times;</span>
             
+            <div class="modal-header-actions">
+                <h2 id="detalhes-projeto">Nome do Projeto</h2>
+                <div class="header-buttons">
+                    <button id="gerar-resumo-detalhes-btn" class="submit-button" style="background-color: #17a2b8;">Gerar Análise</button>
+                    <button id="editar-card-btn" class="submit-button">Editar</button>
+                    <button id="salvar-card-btn" class="submit-button hidden">Salvar</button>
+                </div>
+            </div>
+
             <!-- Modo Visualização -->
             <div id="view-mode">
                 <p><strong>Cliente:</strong> <span id="detalhes-cliente"></span></p>
@@ -145,33 +154,6 @@
                 <div style="flex: 1;">
                     <h3>Escopo do Orçamento</h3>
                     <p id="detalhes-escopo" class="view-mode-field" style="white-space: pre-wrap; background-color: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 100px;"></p>
-                    <!-- Seção de Resumo da IA (Início) -->
-<div id="summary-section" class="hidden">
-<!-- Novo conteúdo para #summary-section -->
-<hr>
-<div class="summary-header">
-    <ul class="nav nav-tabs" id="analysis-tabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="analise-completa-tab" data-bs-toggle="tab" data-bs-target="#analise-completa-pane" type="button" role="tab" aria-controls="analise-completa-pane" aria-selected="true">Análise Completa</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="resumo-cliente-tab" data-bs-toggle="tab" data-bs-target="#resumo-cliente-pane" type="button" role="tab" aria-controls="resumo-cliente-pane" aria-selected="false">Resumo para Cliente</button>
-        </li>
-    </ul>
-    <button id="copy-summary-btn" class="submit-button hidden" style="width: auto; margin-top: 0;">Copiar</button>
-</div>
-
-<div id="summary-loader" class="loader-container">
-    <div class="loader"></div>
-    <p>Analisando o escopo e gerando o resumo...</p>
-</div>
-
-<div class="tab-content" id="analysis-tabs-content">
-    <div class="tab-pane fade show active" id="analise-completa-pane" role="tabpanel" aria-labelledby="analise-completa-tab"></div>
-    <div class="tab-pane fade" id="resumo-cliente-pane" role="tabpanel" aria-labelledby="resumo-cliente-tab"></div>
-</div>
-</div>
-<!-- Seção de Resumo da IA (Fim) -->
                     <textarea id="edit-escopo" class="edit-mode-field hidden" style="width: 100%; min-height: 120px;"></textarea>
                 </div>
                 <div style="flex: 1;">
@@ -181,27 +163,30 @@
                 </div>
             </div>
 
-            <div class="modal-header-actions">
-    <h2 id="detalhes-projeto">Nome do Projeto</h2>
-    <div class="header-buttons">
-        <button id="gerar-resumo-detalhes-btn" class="submit-button hidden" style="background-color: #17a2b8;">Gerar Resumo</button>
-        <button id="editar-card-btn" class="submit-button">Editar</button>
-        <button id="salvar-card-btn" class="submit-button hidden">Salvar Alterações</button>
-    </div>
-</div>
-
-            <div id="resumo-container" class="hidden" style="margin-top: 20px;">
-                <div class="resumo-header">
-                    <h3>Resumo para o Cliente</h3>
-                    <button id="copiar-resumo-btn" class="submit-button" style="width: auto; margin-top: 0; background-color: #6c757d;">Copiar Resumo</button>
+            <!-- Seção de Análise da IA (Abas) -->
+            <div id="summary-section" class="hidden">
+                <hr>
+                <div class="summary-header">
+                    <div class="tabs-container" id="analysis-tabs">
+                        <button class="tab-button active" data-target="analise-completa-pane">Análise Completa</button>
+                        <button class="tab-button" data-target="resumo-cliente-pane">Resumo para Cliente</button>
+                    </div>
+                    <button id="copy-summary-btn" class="submit-button" style="width: auto; margin-top: 0;">Copiar</button>
                 </div>
-                <div id="detalhes-resumo" style="white-space: pre-wrap; background-color: #f0f8ff; padding: 15px; border: 1px solid #d1e7fd; border-radius: 4px; min-height: 100px;"></div>
+
+                <div id="summary-loader" class="loader-container hidden">
+                    <div class="loader"></div>
+                    <p>Analisando o escopo e gerando o resumo...</p>
+                </div>
+
+                <div class="tab-content" id="analysis-tabs-content">
+                    <div class="tab-pane active" id="analise-completa-pane"></div>
+                    <div class="tab-pane" id="resumo-cliente-pane"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
