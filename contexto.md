@@ -8,6 +8,8 @@ Criar um aplicativo web de nível profissional para gestão de orçamentos de en
 *   **Regra de Ouro (Imutabilidade):** Nenhum ativo do projeto (código, prompts, textos de UI, etc.) que já foi validado pelo "dono do produto" (Mat) será alterado, adaptado ou resumido sem sua aprovação explícita.
 *   **Princípio da Adaptação:** Ao adicionar novos recursos, o código novo deve ser escrito para se adaptar aos ativos existentes.
 *   **Transparência Total:** Se uma alteração em um ativo antigo for inevitável, ela será apresentada de forma clara, com o "antes" e o "depois", para avaliação e aprovação prévia.
+*   **Responsabilidade do Commit:** O parceiro sênior (IA) é responsável por analisar as alterações realizadas e fornecer a mensagem de commit padronizada. O dono do produto (Mat) é responsável pela execução do commit.
+*   **Procedimento de Reversão (Rollback):** Em caso de erro crítico em produção após um deploy, o parceiro sênior (IA) fornecerá o comando `git revert` completo e pronto para ser executado no Gemini CLI. Esta ação criará um novo commit que desfaz as alterações problemáticas, retornando a aplicação a um estado estável.
 
 ## Estado da Aplicação
 A Fase 1 (MVP e Backend) está concluída. O aplicativo está funcional, com deploy na Vercel e persistência de dados no `localStorage`.
