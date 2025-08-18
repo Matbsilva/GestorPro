@@ -165,6 +165,23 @@ kanbanBoard.addEventListener('click', (event) => {
 
 // --- Funções e Event Listeners dos Modais ---
 
+function resetDuvidasModal() {
+    // Limpa os campos de texto
+    document.getElementById('scope-input').value = '';
+    document.getElementById('duvidas-geradas-input').value = '';
+    document.getElementById('resumo-gerado-input').value = '';
+
+    // Esconde a área de resumo e reabilita botões
+    document.getElementById('resumo-gerado-input').style.display = 'none';
+    document.getElementById('generate-doubts-btn').disabled = false;
+    document.getElementById('create-card-final-btn').disabled = false;
+    
+    // Restaura o botão de gerar resumo
+    const gerarResumoBtn = document.getElementById('gerar-resumo-btn');
+    gerarResumoBtn.textContent = 'Gerar Resumo para Cliente';
+    gerarResumoBtn.disabled = false;
+}
+
 // Botão "Gerar Dúvidas" do segundo modal
 const generateDoubtsBtn = document.getElementById('generate-doubts-btn');
 const copiarDuvidasBtn = document.getElementById('copiar-duvidas-btn');
@@ -208,8 +225,9 @@ orcamentoForm.addEventListener('submit', (event) => {
         prioridade: document.getElementById('prioridade-input').value
     };
 
-    // Fecha o primeiro modal e abre o segundo
+    // Fecha o primeiro modal, reseta e abre o segundo
     closeModal();
+    resetDuvidasModal(); // Limpa o estado do modal de dúvidas
     duvidasModal.style.display = 'block';
     
     // Limpa o formulário para a próxima vez
