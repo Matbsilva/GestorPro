@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const suggestionsContainer = document.getElementById('sugestoes-cliente');
     const gerarResumoBtn = document.getElementById('gerar-resumo-btn');
     const analysisTabs = document.getElementById('analysis-tabs');
+    const copySummaryBtn = document.getElementById('copy-summary-btn');
 
     /**
      * Salva os cards no localStorage.
@@ -487,4 +488,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Inicialização ---
     carregarEstado();
+
+    // --- Lógica do Botão Copiar ---
+    copySummaryBtn.addEventListener('click', () => {
+        const activeTab = document.querySelector('.tab-pane.active');
+        if (!activeTab) return;
+
+        // Para preservar a formatação (quebras de linha, etc.) ao copiar,
+        // criamos um elemento temporário para converter o HTML em texto formatado.
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = activeTab.innerHTML;
+        const textToCopy = tempDiv.innerText;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            // Feedback visual para o usuário
+            copySummaryBtn.textContent = 'Copiado!';
+            copySummaryBtn.style.backgroundColor = '#28a745'; // Verde sucesso
+            setTimeout(() => {
+                copySummaryBtn.textContent = 'Copiar';
+                copySummaryBtn.style.backgroundColor = ''; // Volta à cor original
+            }, 2000);
+        }).catch(err => {
+            console.error('Erro ao copiar texto: ', err);
+            alert('Não foi possível copiar o texto.');
+        });
+    });
 });

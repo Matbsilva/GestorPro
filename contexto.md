@@ -170,3 +170,12 @@ Esta seção detalha a jornada do projeto até o início da Sessão v5.0, com de
     *   `script.js`: As funções `generateDoubtsBtn` e `gerarResumoBtn` foram atualizadas para usar `.innerHTML` e o conversor Markdown nos novos elementos.
 *   **Commit Associado:** `fix(ui): renderiza markdown no modal de criação de card`
 ---
+---
+#### 18/08/2025 - FASE 2, TAREFA 4: Implementação da Função "Copiar para E-mail"
+
+*   **Objetivo:** Implementar a funcionalidade do botão "Copiar" no modal de detalhes para permitir que o usuário copie o conteúdo da aba ativa (Análise Completa ou Resumo para Cliente) para a área de transferência.
+*   **Análise e Arquitetura da Solução:** A lógica foi implementada utilizando a API assíncrona e segura `navigator.clipboard.writeText()`. Para garantir que o texto copiado seja "limpo" (sem formatação HTML, mas preservando quebras de linha), um elemento `div` temporário é usado para converter o `.innerHTML` da aba em `.innerText`. Um feedback visual foi adicionado, mudando o texto e a cor do botão para "Copiado!" por 2 segundos após o sucesso da operação.
+*   **Modificações Realizadas:**
+    *   `script.js`: Um novo event listener foi adicionado ao botão `#copy-summary-btn`. A lógica de cópia e o feedback visual foram implementados dentro deste listener.
+*   **Commit Associado:** `feat(ui): implementa funcionalidade de copiar resumo`
+---
