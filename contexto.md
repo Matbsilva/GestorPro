@@ -179,3 +179,14 @@ Esta seção detalha a jornada do projeto até o início da Sessão v5.0, com de
     *   `script.js`: Um novo event listener foi adicionado ao botão `#copy-summary-btn`. A lógica de cópia e o feedback visual foram implementados dentro deste listener.
 *   **Commit Associado:** `feat(ui): implementa funcionalidade de copiar resumo`
 ---
+---
+#### 18/08/2025 - FASE 2, TAREFA 5: Tentativa, Falha e Recuperação da Edição Avançada
+
+*   **Objetivo:** Implementar uma funcionalidade de edição avançada, separando a edição de metadados da edição de análise e alertando o usuário sobre inconsistências.
+*   **Análise e Arquitetura da Solução (Relato de Falha e Lições Aprendidas):** Esta tarefa foi marcada por múltiplas tentativas de implementação que resultaram em bugs de regressão críticos. A causa raiz principal foi a violação do nosso "Princípio da Modificação Cirúrgica"; a IA tentou substituir o `script.js` inteiro em vez de aplicar alterações pontuais, o que levou à perda de funcionalidades essenciais que já estavam estáveis (carregamento de cards, cores de prioridade, botões de ação, autocomplete). Após várias tentativas frustradas de correção, a decisão estratégica foi tomada de **abandonar a implementação atual** e restaurar o código para um estado 100% funcional conhecido.
+*   **Estado Final e Recuperação:** O branch `feature/edicao-avancada` foi revertido para o commit `adf7ec0` ("feat(ui): implementa funcionalidade de copiar resumo"). Este commit representa a nossa **base de ouro**, a última versão comprovadamente estável. Todas as tentativas de implementação da edição avançada foram descartadas.
+*   **Próximos Passos (Plano para a Próxima Sessão):** A próxima sessão deve recomeçar a implementação da "Edição Avançada" a partir do zero, seguindo de forma **extremamente rigorosa** o "Princípio da Modificação Cirúrgica" e o fluxo de trabalho de micro-passos. A primeira ação será refinar o prompt da IA para a formatação ultra-compacta, seguida pela adição dos elementos HTML, depois os estilos CSS, e por último a lógica JavaScript, com commits e validações para cada pequena etapa.
+*   **Modificações Realizadas:**
+    *   `branch`: O branch `feature/edicao-avancada` foi revertido para o commit `adf7ec0`.
+*   **Commit Associado:** `revert(feature): reverte tentativas de edição e restaura base estável`
+---
