@@ -25,11 +25,12 @@ Adotamos o modelo de **Git Flow Simplificado** para garantir a estabilidade do n
 **Nosso processo passo a passo é:**
 
 1.  **Início da Tarefa:** Para iniciar uma nova tarefa, a IA criará um novo branch de trabalho a partir do `main` (ex: `feature/nome-da-tarefa`).
-2.  **Desenvolvimento Isolado:** Todo o trabalho da IA (criação e modificação de arquivos) será realizado exclusivamente neste novo branch. Faremos quantos commits forem necessários aqui, com a segurança de que o `main` permanece intacto.
-3.  **Análise e Validação:** Mat valida as alterações no ambiente de testes (Vercel) a partir do branch de trabalho.
-4.  **Merge (Incorporação):** Uma vez que a tarefa é concluída e aprovada, a IA fará o "merge" do branch de trabalho de volta para o `main`. Isso incorpora a nova funcionalidade à versão estável.
-5.  **Atualização do Diário de Bordo:** A IA atualiza o `contexto.md` com a entrada da tarefa finalizada.
-6.  **Limpeza:** O branch de trabalho é removido após o merge bem-sucedido.
+2.  **Análise da Fonte da Verdade:** Antes de qualquer modificação, a IA sempre analisará o estado atual dos arquivos no branch de trabalho para garantir o contexto.
+3.  **Desenvolvimento Isolado:** Todo o trabalho da IA (criação e modificação de arquivos) será realizado exclusivamente neste novo branch. Faremos quantos commits forem necessários aqui, com a segurança de que o `main` permanece intacto.
+4.  **Análise e Validação:** Mat valida as alterações no ambiente de testes (Vercel) a partir do branch de trabalho.
+5.  **Merge (Incorporação):** Uma vez que a tarefa é concluída e aprovada, a IA fará o "merge" do branch de trabalho de volta para o `main`. Isso incorpora a nova funcionalidade à versão estável.
+6.  **Atualização do Diário de Bordo:** A IA atualiza o `contexto.md` com a entrada da tarefa finalizada.
+7.  **Limpeza:** O branch de trabalho é removido após o merge bem-sucedido.
 
 ### 1.3. Nossas Regras Fundamentais
 

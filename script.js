@@ -194,8 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
             prioridade: document.getElementById('prioridade-input').value,
         };
 
+        // Limpa os campos do próximo modal
         document.getElementById('scope-input').value = '';
-        document.getElementById('duvidas-geradas-input').value = '';
+        document.getElementById('duvidas-geradas-output').innerHTML = '';
+        document.getElementById('resumo-output').innerHTML = '';
         document.getElementById('resumo-container').classList.add('hidden');
         
         closeModal();
