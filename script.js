@@ -47,10 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
         card.dataset.id = cardData.id;
         adicionarEventosDrag(card);
 
+        const cardActions = document.createElement('div');
+        cardActions.className = 'card-actions';
+
+        const editBtn = document.createElement('span');
+        editBtn.className = 'edit-card-btn';
+        editBtn.innerHTML = '&#9998;'; // Ícone de lápis
+        cardActions.appendChild(editBtn);
+
         const deleteBtn = document.createElement('span');
         deleteBtn.className = 'delete-card-btn';
         deleteBtn.innerHTML = '&times;';
-        card.appendChild(deleteBtn);
+        cardActions.appendChild(deleteBtn);
+
+        card.appendChild(cardActions);
 
         const cardHeader = document.createElement('div');
         cardHeader.className = 'card-header';
@@ -367,17 +377,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica de Edição do Modal de Detalhes ---
     const editarCardBtn = document.getElementById('editar-card-btn');
     const salvarCardBtn = document.getElementById('salvar-card-btn');
+    const cancelarEdicaoBtn = document.getElementById('cancelar-edicao-btn');
+    const refazerAnaliseBtn = document.getElementById('refazer-analise-btn');
 
-    editarCardBtn.addEventListener('click', () => {
+    function switchToViewMode() {
+        document.getElementById('view-mode').classList.remove('hidden');
+        document.getElementById('edit-mode').classList.add('hidden');
+        document.querySelectorAll('.view-mode-field').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('.edit-mode-field').forEach(el => el.classList.add('hidden'));
+
+        // Botões de visualização
+        editarCardBtn.classList.remove('hidden');
+        gerarResumoDetalhesBtn.classList.remove('hidden');
+
+        // Botões de edição
+        salvarCardBtn.classList.add('hidden');
+        cancelarEdicaoBtn.classList.add('hidden');
+        refazerAnaliseBtn.classList.add('hidden');
+    }
+
+    function switchToEditMode() {
         const cardId = detalhesModal.dataset.cardId;
         const card = kanbanCards.find(c => c.id === cardId);
         if (!card) return;
 
-        document.getElementById('view-mode').classList.add('hidden');
-        document.getElementById('edit-mode').classList.remove('hidden');
-        document.querySelectorAll('.view-mode-field').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.edit-mode-field').forEach(el => el.classList.remove('hidden'));
-        
+        // Preenche os campos de edição com os dados atuais
         document.getElementById('edit-projeto').value = card.dados.projeto;
         document.getElementById('edit-cliente').value = card.dados.cliente;
         document.getElementById('edit-prioridade').value = card.dados.prioridade;
@@ -386,27 +410,57 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edit-escopo').value = card.dados.escopo;
         document.getElementById('edit-duvidas').value = card.dados.analiseCompleta;
 
+        // Alterna a visibilidade dos painéis
+        document.getElementById('view-mode').classList.add('hidden');
+        document.getElementById('edit-mode').classList.remove('hidden');
+        document.querySelectorAll('.view-mode-field').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.edit-mode-field').forEach(el => el.classList.remove('hidden'));
+
+        // Alterna a visibilidade dos botões
         editarCardBtn.classList.add('hidden');
-        salvarCardBtn.classList.remove('hidden');
         gerarResumoDetalhesBtn.classList.add('hidden');
+        salvarCardBtn.classList.remove('hidden');
+        cancelarEdicaoBtn.classList.remove('hidden');
+        refazerAnaliseBtn.classList.remove('hidden');
+        refazerAnaliseBtn.disabled = true; // Começa desabilitado
+        
+        // Esconde a seção de resumo da IA durante a edição
         document.getElementById('summary-section').classList.add('hidden');
-    });
+    }
+
+    editarCardBtn.addEventListener('click', switchToEditMode);
+    cancelarEdicaoBtn.addEventListener('click', switchToViewMode);
 
     salvarCardBtn.addEventListener('click', () => {
         const cardId = detalhesModal.dataset.cardId;
         const card = kanbanCards.find(c => c.id === cardId);
         if (!card) return;
 
-        card.dados.projeto = document.getElementById('edit-projeto').value;
-        card.dados.cliente = document.getElementById('edit-cliente').value;
-        card.dados.prioridade = document.getElementById('edit-prioridade').value;
-        card.dados.entrada = document.getElementById('edit-entrada').value;
-        card.dados.limite = document.getElementById('edit-limite').value;
-        card.dados.escopo = document.getElementById('edit-escopo').value;
-        card.dados.analiseCompleta = document.getElementById('edit-duvidas').value;
+        // Coleta os novos dados dos campos de edição
+        const dadosAntigos = { ...card.dados };
+        const novosDados = {
+            projeto: document.getElementById('edit-projeto').value,
+            cliente: document.getElementById('edit-cliente').value,
+            prioridade: document.getElementById('edit-prioridade').value,
+            entrada: document.getElementById('edit-entrada').value,
+            limite: document.getElementById('edit-limite').value,
+            escopo: document.getElementById('edit-escopo').value,
+            analiseCompleta: document.getElementById('edit-duvidas').value,
+        };
 
+        // Verifica se o escopo ou a análise foram alterados
+        const escopoAlterado = dadosAntigos.escopo !== novosDados.escopo;
+        const analiseAlterada = dadosAntigos.analiseCompleta !== novosDados.analiseCompleta;
+
+        if (escopoAlterado || analiseAlterada) {
+            // Invalida o resumo antigo, pois a base para ele mudou
+            novosDados.resumoCliente = null; 
+        }
+
+        card.dados = { ...card.dados, ...novosDados };
         salvarCards();
         
+        // Atualiza o card na interface do Kanban
         const cardElemento = document.querySelector(`.kanban-card[data-id="${cardId}"]`);
         if (cardElemento) {
             cardElemento.querySelector('.card-title').textContent = card.dados.projeto;
@@ -421,7 +475,62 @@ document.addEventListener('DOMContentLoaded', () => {
             cardElemento.querySelector('.card-dates').innerHTML = `<p><strong>Entrada:</strong> ${card.dados.entrada}</p><p><strong>Limite:</strong> ${card.dados.limite}</p>`;
         }
 
-        closeModal();
+        // Atualiza a visualização no modal antes de fechar
+        document.getElementById('detalhes-projeto').textContent = card.dados.projeto;
+        document.getElementById('detalhes-cliente').textContent = card.dados.cliente;
+        document.getElementById('detalhes-prioridade').textContent = card.dados.prioridade;
+        document.getElementById('detalhes-entrada').textContent = card.dados.entrada;
+        document.getElementById('detalhes-limite').textContent = card.dados.limite;
+        document.getElementById('detalhes-escopo').textContent = card.dados.escopo;
+        document.getElementById('detalhes-duvidas').innerHTML = converter.makeHtml(card.dados.analiseCompleta);
+
+        switchToViewMode(); // Retorna para o modo de visualização
+    });
+
+    const editEscopoTextarea = document.getElementById('edit-escopo');
+
+    editEscopoTextarea.addEventListener('input', () => {
+        const cardId = detalhesModal.dataset.cardId;
+        const card = kanbanCards.find(c => c.id === cardId);
+        if (!card) return;
+        // Habilita o botão apenas se o escopo for modificado
+        refazerAnaliseBtn.disabled = (card.dados.escopo || '').trim() === editEscopoTextarea.value.trim();
+    });
+
+    refazerAnaliseBtn.addEventListener('click', async () => {
+        const novoEscopo = document.getElementById('edit-escopo').value;
+        if (!novoEscopo.trim()) {
+            alert('O escopo não pode estar vazio para gerar uma nova análise.');
+            return;
+        }
+
+        if (!confirm('A análise de IA (dúvidas e resumo) será substituída. Deseja continuar?')) {
+            return;
+        }
+
+        refazerAnaliseBtn.textContent = 'Analisando...';
+        refazerAnaliseBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/gerar-duvidas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ escopo: novoEscopo }),
+            });
+            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+            const data = await response.json();
+            
+            document.getElementById('edit-duvidas').value = data.duvidas;
+            alert('Nova análise gerada com sucesso e inserida no campo "Dúvidas Pendentes".');
+
+        } catch (error) {
+            console.error('Erro ao refazer análise:', error);
+            alert(`Ocorreu um erro ao gerar a nova análise: ${error.message}.`);
+        } finally {
+            refazerAnaliseBtn.textContent = 'Refazer Análise';
+            // Mantém o botão habilitado para permitir novos ajustes no escopo
+            refazerAnaliseBtn.disabled = false; 
+        }
     });
 
     /**

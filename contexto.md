@@ -190,3 +190,14 @@ Esta seção detalha a jornada do projeto até o início da Sessão v5.0, com de
     *   `branch`: O branch `feature/edicao-avancada` foi revertido para o commit `adf7ec0`.
 *   **Commit Associado:** `revert(feature): reverte tentativas de edição e restaura base estável`
 ---
+---
+#### 19/08/2025 - FASE 2, TAREFA 5 (REBUILD): Implementação da Edição Avançada Segura
+
+*   **Objetivo:** Reimplementar a funcionalidade de edição de cards a partir do zero, seguindo as lições aprendidas da tentativa anterior e aplicando uma arquitetura de UI mais robusta e segura.
+*   **Análise e Arquitetura da Solução:** Para evitar os bugs de regressão da tentativa anterior, a implementação seguiu estritamente o "Princípio da Modificação Cirúrgica". A nova arquitetura de UI no modal de detalhes introduz um fluxo claro com botões dedicados para cada ação: "Editar", "Salvar", "Cancelar" e "Refazer Análise". A lógica de JavaScript foi refatorada para gerenciar os estados de "visualização" e "edição", controlando a visibilidade dos campos e botões apropriados. Uma salvaguarda importante foi adicionada: ao salvar uma alteração no escopo ou nas dúvidas, o resumo para o cliente (que depende desses dados) é automaticamente invalidado (definido como `null`), forçando uma nova geração para garantir consistência. A função "Refazer Análise" só é habilitada quando o usuário de fato altera o texto do escopo, prevenindo chamadas desnecessárias à API.
+*   **Modificações Realizadas:**
+    *   `index.html`: Adicionados os botões "Cancelar" e "Refazer Análise" ao cabeçalho do modal de detalhes, com a classe `hidden` para controle de visibilidade.
+    *   `style.css`: Adicionados estilos para o novo botão de edição (ícone de lápis) no card e para o contêiner de ações (`.card-actions`), garantindo que apareçam ao passar o mouse.
+    *   `script.js`: A função `criarCardElemento` foi modificada para incluir o botão de edição. A lógica de edição no modal foi completamente refatorada com funções `switchToViewMode` e `switchToEditMode` para gerenciar a interface. Foram adicionados listeners para os novos botões "Cancelar" e "Refazer Análise", e a lógica de "Salvar" foi aprimorada para invalidar resumos inconsistentes.
+*   **Commit Associado:** `feat(ui): implementa edição avançada de card com fluxo seguro`
+---
